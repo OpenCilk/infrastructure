@@ -1,0 +1,41 @@
+#!/bin/sh
+OPENCILK_SOURCE=/data/Cilk
+CHEETAH_SOURCE=${OPENCILK_SOURCE}/cheetah
+TAPIR_SOURCE=${OPENCILK_SOURCE}/opencilk-project
+# Build director for Tapir.  Currently cheetah has to be built in its
+# source directory.  For the first beta the compiler will not be installed
+# anywhere.  Run it out of ${BUILD_DIR}/bin.
+BUILD_DIR="${1:?}"
+# How parallel is compilation?
+JOBS="${2:-10}"
+
+exec < /dev/null
+
+date # Who doesn't love timestamps?
+
+# LLVM works with any make.  Cheetah currently requires GNU make.
+case `uname -s` in
+    Linux|Darwin) GMAKE=make ;;
+    *) GMAKE=gmake ;;
+esac
+
+set -ex
+
+test -d "${TAPIR_SOURCE}/llvm"
+test -d "${CHEETAH_SOURCE}/runtime"
+mkdir -p "${BUILD_DIR}"
+
+cd "${BUILD_DIR}"
+
+# For beta assertions should be enabled.  If you intend to attach a
+# debugger change Release to RelWithDebInfo.
+COMPONENTS="clang;compiler-rt"
+cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" -DLLVM_ENABLE_ASSERTIONS=ON -DCMAKE_BUILD_TYPE=Release "${TAPIR_SOURCE}/llvm"
+# Alternatively, make -j "${JOBS}" using the native system make.
+cmake --build . -j "${JOBS}"
+# TODO: cmake --install ...
+
+cd "${CHEETAH_SOURCE}/runtime"
+${GMAKE:?} -j "${JOBS}" COMPILER_BASE="${BUILD_DIR}/bin/"
+
+date
