@@ -1,7 +1,20 @@
 #!/bin/sh
 OPENCILK_SOURCE=/data/Cilk
-CHEETAH_SOURCE=${OPENCILK_SOURCE}/cheetah
-TAPIR_SOURCE=${OPENCILK_SOURCE}/opencilk-project
+
+case "$1" in
+    /*) OPENCILK_SOURCE="$1"; shift;;
+    -h|-help|--help) echo "Usage: build source-dir build-dir [core count]"; exit 1;;
+    -*) echo "unknown option $1"; exit 1;;
+    *) echo "First argument ($1) must be absolute pathname"; exit 1;;
+esac
+
+if ! test -d "${OPENCILK_SOURCE}" ; then
+    echo "OpenCilk source tree ${OPENCILK_SOURCE} does not exist" 1>&2
+    exit 1
+fi
+
+CHEETAH_SOURCE="${OPENCILK_SOURCE:?}/cheetah"
+TAPIR_SOURCE="${OPENCILK_SOURCE:?}/opencilk-project"
 # Build director for Tapir.  Currently cheetah has to be built in its
 # source directory.  For the first beta the compiler will not be installed
 # anywhere.  Run it out of ${BUILD_DIR}/bin.
@@ -14,15 +27,22 @@ exec < /dev/null
 date # Who doesn't love timestamps?
 
 # LLVM works with any make.  Cheetah currently requires GNU make.
-case `uname -s` in
-    Linux|Darwin) GMAKE=make ;;
+case "`uname -s`" in
+    Linux|Darwin) GMAKE=make; ;;
     *) GMAKE=gmake ;;
 esac
 
+if ! test -d "${TAPIR_SOURCE}/llvm" ; then
+    echo "LLVM not found at ${TAPIR_SOURCE}/llvm" 1>&2
+    exit 1
+fi
+if ! test -d "${CHEETAH_SOURCE}/runtime" ; then
+    echo "Cheetah runtime not found at ${CHEETAH_SOURCE}/runtime" 1>&2
+    exit 1
+fi
+
 set -ex
 
-test -d "${TAPIR_SOURCE}/llvm"
-test -d "${CHEETAH_SOURCE}/runtime"
 mkdir -p "${BUILD_DIR}"
 
 cd "${BUILD_DIR}"
@@ -37,5 +57,12 @@ cmake --build . -j "${JOBS}"
 
 cd "${CHEETAH_SOURCE}/runtime"
 ${GMAKE:?} -j "${JOBS}" COMPILER_BASE="${BUILD_DIR}/bin/"
+
+RESOURCE_DIR=`"${BUILD_DIR}/bin/clang" -print-resource-dir`
+TRIPLE=`"${BUILD_DIR}/bin/clang" -print-target-triple`
+# The BSDs have version number stripped here.  See ToolChain::getOSLibName().
+LLVM_OS_DIR=`echo "${TRIPLE}" | sed -e s/.*-// -e s/[.0-9]*$//`
+ARCH_SUFFIX=`echo "${TRIPLE}" | sed -e 's/-.*$//'`
+cp -p libcheetah.a "${RESOURCE_DIR}/lib/${LLVM_OS_DIR}/libclang_rt.opencilk-${ARCH_SUFFIX}.a"
 
 date
