@@ -1,0 +1,17 @@
+Welcome to OpenCilk beta 1.
+
+OpenCilk Beta 1 is released as source code in three git repositories.  You will need 1.5 GB of space for the source code (mostly LLVM) plus 3 GB of space to build (total 4.5 GB).  You will need a compiler capable of building LLVM.  Any compiler you are likely to have installed on a modern multicore system should work.  The first version supports only 64 bit x86 on Linux or FreeBSD.
+
+Clone these repositories into sibling directories:
+
+git clone -b [TODO: branch name] https://github.com/OpenCilk/opencilk-project
+git clone -b [TODO: branch name] https://github.com/OpenCilk/cheetah
+git clone -b [TODO: branch name] https://github.com/OpenCilk/infrastructure
+
+Run infrastructure/tools/build with two or three arguments.  The first argument is the absolute pathname of the parent directory of the three repositories.  The second argument is the pathname of a directory to build OpenCilk.  The third rgument, if present, tells the build system how many parallel jobs to run.  Default parellelism is 10.
+
+OpenCilk builds in less than ten minutes in parallel on a 24 core Ryzen with NVMe drive and may take all day on an older machine.  You can run the compiler out of its build tree, adding "/bin/clang" to the build directory name.
+
+
+The default build options assume you have a system with Intel's Advanced Vector Extensions 2 ("AVX-2").  AVX-2 is available on Haswell and newer Intel processors (starting 2013) and Excavator and newer AMD processors (starting 2015).  If you need to run OpenCilk on an older processor change ARCH in cheetah/config.mk to remove the -mavx2 flag.
+
