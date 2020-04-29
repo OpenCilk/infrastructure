@@ -52,7 +52,8 @@ cd "${BUILD_DIR}"
 COMPONENTS="clang;compiler-rt"
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" -DLLVM_ENABLE_ASSERTIONS=ON -DCMAKE_BUILD_TYPE=Release "${TAPIR_SOURCE}/llvm"
 # Alternatively, make -j "${JOBS}" using the native system make.
-cmake --build . -j "${JOBS}"
+# cmake 3.10 neeeds -- before -j.  cmake 3.16 understands -j
+cmake --build . -- -j "${JOBS}"
 # TODO: cmake --install ...
 
 cd "${CHEETAH_SOURCE}/runtime"
