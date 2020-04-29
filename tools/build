@@ -62,7 +62,8 @@ ${GMAKE:?} -j "${JOBS}" COMPILER_BASE="${BUILD_DIR}/bin/"
 RESOURCE_DIR=`"${BUILD_DIR}/bin/clang" -print-resource-dir`
 TRIPLE=`"${BUILD_DIR}/bin/clang" -print-target-triple`
 # The BSDs have version number stripped here.  See ToolChain::getOSLibName().
-LLVM_OS_DIR=`echo "${TRIPLE}" | sed -e s/.*-// -e s/[.0-9]*$//`
+# linux-gnu turns into plain linux
+LLVM_OS_DIR=`echo "${TRIPLE}" | sed -e 's/linux-gnu/linux/' -e 's/.*-//' -e 's/[.0-9]*$//'`
 ARCH_SUFFIX=`echo "${TRIPLE}" | sed -e 's/-.*$//'`
 cp -p libcheetah.a "${RESOURCE_DIR}/lib/${LLVM_OS_DIR}/libclang_rt.opencilk-${ARCH_SUFFIX}.a"
 
