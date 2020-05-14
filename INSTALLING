@@ -4,9 +4,9 @@ OpenCilk Beta 1 is released as source code in three git repositories.  You will 
 
 Clone these repositories into sibling directories:
 
-git clone -b [TODO: branch name] https://github.com/OpenCilk/opencilk-project
-git clone -b [TODO: branch name] https://github.com/OpenCilk/cheetah
-git clone -b [TODO: branch name] https://github.com/OpenCilk/infrastructure
+git clone -b opencilk/beta1 https://github.com/OpenCilk/infrastructure
+git clone -b opencilk/beta1 https://github.com/OpenCilk/cheetah
+git clone -b opencilk/beta1 https://github.com/OpenCilk/opencilk-project
 
 Run infrastructure/tools/build with two or three arguments.  The first argument is the absolute pathname of the parent directory of the three repositories.  The second argument is the pathname of a directory to build OpenCilk.  The third rgument, if present, tells the build system how many parallel jobs to run.  Default parellelism is 10.
 
