@@ -1,0 +1,13 @@
+Welcome to OpenCilk beta 1.
+
+This release is meant for experienced Cilk users running Linux or FreeBSD on modern 64 bit x86 chips (Haswell, Excavator, or newer).  The compiler is based on LLVM 9 and supports the usual clang options.  Use the -fopencilk command line argument and include <cilk/cilk.h> to enable the cilk_spawn, cilk_sync, and cilk_for keywords.  Both C and C++ are supported.  Exceptions do not work yet and must not be allowed to escape a spawned function or a block containing an explicit or implicit sync.  Support for exceptions is planned for beta 2.  Reducers are supported using hyperobject headers from Intel Cilk Plus, except it is not valid to reference the view of a C reducer after calling CILK_C_UNREGISTER_REDUCER.
+
+Build instructions are in https://github.com/OpenCilk/infrastructure/.  Some demo programs are available at https://github.com/OpenCilk/applications.  Bugs can be reported using the GitHub interface at https://github.com/OpenCilk/opencilk-project/issues.
+
+The OpenCilk team:
+Charles Leiserson
+Angelina Lee
+TB Schardl
+Dorothy Curtis
+Grace Q Yin
+John F. Carr
