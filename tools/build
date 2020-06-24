@@ -8,23 +8,41 @@ case "$1" in
     *) echo "First argument ($1) must be absolute pathname"; exit 1;;
 esac
 
+# Build director for Tapir.  Currently cheetah has to be built in its
+# source directory.  For the first beta the compiler will not be installed
+# anywhere.  Run it out of ${BUILD_DIR}/bin.
+BUILD_DIR="${1:?}"
+
+NCPU="${2}"
+
+if test -z "${NCPU}" ; then
+    NCPU=`grep -c '^processor' /proc/cpuinfo 2> /dev/null`
+fi
+
+if test -z "${NCPU}" ; then
+    if test -x /sbin/sysctl ; then
+	NCPU=`sysctl -n hw.ncpu`
+    fi
+fi
+
+if test -z "${NCPU}" -o 0 -eq "${NCPU}" ; then
+    echo "Unknown CPU count; using 10"
+    NCPU=10
+fi
+
 if ! test -d "${OPENCILK_SOURCE}" ; then
     echo "OpenCilk source tree ${OPENCILK_SOURCE} does not exist" 1>&2
     exit 1
 fi
 
-CHEETAH_SOURCE="${OPENCILK_SOURCE:?}/cheetah"
 TAPIR_SOURCE="${OPENCILK_SOURCE:?}/opencilk-project"
-# Build director for Tapir.  Currently cheetah has to be built in its
-# source directory.  For the first beta the compiler will not be installed
-# anywhere.  Run it out of ${BUILD_DIR}/bin.
-BUILD_DIR="${1:?}"
-# How parallel is compilation?
-JOBS="${2:-10}"
+CHEETAH_SOURCE="${TAPIR_SOURCE:?}/cheetah"
 
 exec < /dev/null
 
 date # Who doesn't love timestamps?
+
+echo "Building with ${NCPU:?} parallel jobs"
 
 # LLVM works with any make.  Cheetah currently requires GNU make.
 case "`uname -s`" in
@@ -37,7 +55,7 @@ if ! test -d "${TAPIR_SOURCE}/llvm" ; then
     exit 1
 fi
 if ! test -d "${CHEETAH_SOURCE}/runtime" ; then
-    echo "Cheetah runtime not found at ${CHEETAH_SOURCE}/runtime" 1>&2
+    echo "Cheetah runtime source not found at ${CHEETAH_SOURCE}/runtime" 1>&2
     exit 1
 fi
 
@@ -49,22 +67,22 @@ cd "${BUILD_DIR}"
 
 # For beta assertions should be enabled.  If you intend to attach a
 # debugger change Release to RelWithDebInfo.
-COMPONENTS="clang;compiler-rt"
+COMPONENTS="clang;compiler-rt;cheetah"
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" -DLLVM_ENABLE_ASSERTIONS=ON -DCMAKE_BUILD_TYPE=Release "${TAPIR_SOURCE}/llvm"
-# Alternatively, make -j "${JOBS}" using the native system make.
+# Alternatively, make -j "${NCPU}" using the native system make.
 # cmake 3.10 neeeds -- before -j.  cmake 3.16 understands -j
-cmake --build . -- -j "${JOBS}"
+cmake --build . -- -j "${NCPU}"
 # TODO: cmake --install ...
 
-cd "${CHEETAH_SOURCE}/runtime"
-${GMAKE:?} -j "${JOBS}" COMPILER_BASE="${BUILD_DIR}/bin/"
-
-RESOURCE_DIR=`"${BUILD_DIR}/bin/clang" -print-resource-dir`
 TRIPLE=`"${BUILD_DIR}/bin/clang" -print-target-triple`
-# The BSDs have version number stripped here.  See ToolChain::getOSLibName().
-# linux-gnu turns into plain linux
-LLVM_OS_DIR=`echo "${TRIPLE}" | sed -e 's/linux-gnu/linux/' -e 's/.*-//' -e 's/[.0-9]*$//'`
-ARCH_SUFFIX=`echo "${TRIPLE}" | sed -e 's/-.*$//'`
-cp -p libcheetah.a "${RESOURCE_DIR}/lib/${LLVM_OS_DIR}/libclang_rt.opencilk-${ARCH_SUFFIX}.a"
+VERSION=`sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt"`
+
+LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/libopencilk.a"
+
+# Cheetah should have been built as part of LLVM
+if ! test -f "${LIBPATH}" ; then
+    echo "Cheetah runtime library not found at ${LIBPATH}"
+    exit 1
+fi
 
 date
