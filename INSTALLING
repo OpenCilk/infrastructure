@@ -9,13 +9,12 @@ This version only supports 64 bit x86 on Linux or FreeBSD.
 
 Clone these repositories into sibling directories:
 
-git clone -b opencilk/beta1 https://github.com/OpenCilk/infrastructure
-git clone -b opencilk/beta1 --single-branch https://github.com/OpenCilk/opencilk-project
+git clone -b opencilk/beta2 https://github.com/OpenCilk/infrastructure
+git clone -b opencilk/beta2 --single-branch https://github.com/OpenCilk/opencilk-project
 
 Put the runtime into a subdirectory of the compiler:
 
-git clone -b opencilk/beta1 -- https://github.com/OpenCilk/cheetah opencilk-project/cheetah
-
+git clone -b opencilk/beta2 -- https://github.com/OpenCilk/cheetah opencilk-project/cheetah
 
 Run infrastructure/tools/build with two or three arguments.  The first
 argument is the absolute pathname of the parent directory of the
@@ -31,13 +30,9 @@ $ infrastructure/tools/build `pwd` `pwd`/build 60
 OpenCilk takes a few CPU-hours to build on a modern system -- less
 than 10 minutes on a 24 core Ryzen with a fast disk.  It might take
 all day single threaded on an older machine.  You can run the compiler
-out of its build tree, adding "/bin/clang" to the build directory
-name.
+out of its build tree, adding "/bin/clang" to the build directory name.
 
-The default build options assume you have a system with Intel's
-Advanced Vector Extensions 2 ("AVX-2").  AVX-2 is available on Haswell
-and newer Intel processors (starting 2013) and Excavator and newer AMD
-processors (starting 2015).  If you need to run OpenCilk on an older
-processor change ARCH in cheetah/config.mk to -mavx if you are on
-Sandy Bridge or Steamroller or remove it for older chips.
-
+You must have a chip with Intel's Advanced Vector Instructions (AVX).
+This includes Sandy Bridge and newer Intel processor (released
+starting in 2011) and Steamroller and newer AMD processors (released
+starting in 2014).
