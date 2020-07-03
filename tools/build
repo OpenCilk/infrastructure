@@ -15,13 +15,13 @@ BUILD_DIR="${1:?}"
 
 NCPU="${2}"
 
-if test -z "${NCPU}" ; then
+if test -z "${NCPU}" -a -r /proc/cpuinfo ; then
     NCPU=`grep -c '^processor' /proc/cpuinfo 2> /dev/null`
 fi
 
 if test -z "${NCPU}" ; then
-    if test -x /sbin/sysctl ; then
-	NCPU=`sysctl -n hw.ncpu`
+    if test -x /sbin/sysctl -o -x /usr/sbin/sysctl ; then
+	NCPU=`PATH=${PATH}:/sbin:/usr/sbin sysctl -n hw.ncpu`
     fi
 fi
 
@@ -44,11 +44,13 @@ date # Who doesn't love timestamps?
 
 echo "Building with ${NCPU:?} parallel jobs"
 
+OS="`uname -s`"
+
 # LLVM works with any make.  Cheetah currently requires GNU make.
-case "`uname -s`" in
-    Linux|Darwin) GMAKE=make; ;;
-    *) GMAKE=gmake ;;
-esac
+#case "${OS}" in
+#    Linux|Darwin) GMAKE=make; ;;
+#    *) GMAKE=gmake ;;
+#esac
 
 if ! test -d "${TAPIR_SOURCE}/llvm" ; then
     echo "LLVM not found at ${TAPIR_SOURCE}/llvm" 1>&2
@@ -65,10 +67,29 @@ mkdir -p "${BUILD_DIR}"
 
 cd "${BUILD_DIR}"
 
-# For beta assertions should be enabled.  If you intend to attach a
-# debugger change Release to RelWithDebInfo.
-COMPONENTS="clang;cheetah"
-cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" -DLLVM_ENABLE_RUNTIMES="compiler-rt" -DCOMPILER_RT_BUILD_CILKTOOLS=ON -DLLVM_ENABLE_ASSERTIONS=ON -DCMAKE_BUILD_TYPE=Release "${TAPIR_SOURCE}/llvm"
+: ${OPENCILK_RELEASE:=Release} # RelWithDebInfo to debug the compiler
+: ${OPENCILK_ASSERTIONS:=ON}   # On for beta
+COMPONENTS="clang"    # Unlikely to change
+case "${OS}" in
+    Darwin)
+        : ${LIBCXX:="libcxx;"}
+	if ! test -d "${SDKROOT:=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk}" ; then
+	    echo "Warning: $SDKROOT is missing" 1>&2
+	else
+	    echo "Set SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk to use compile"
+	    OSDEF1="-DCMAKE_OSX_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+	    OSDEF2="-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+	fi
+	;;
+esac
+RUNTIMES="${LIBCXX}compiler-rt;cheetah"
+cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
+      -DLLVM_ENABLE_RUNTIMES="${RUNTIMES}" \
+      -DCOMPILER_RT_BUILD_CILKTOOLS=ON \
+      -DLLVM_ENABLE_ASSERTIONS="${OPENCILK_ASSERTIONS:?}" \
+      -DCMAKE_BUILD_TYPE="${OPENCILK_RELEASE:?}" \
+      "${OSDEF1}" "${OSDEF2}" \
+      "${TAPIR_SOURCE}/llvm"
 # Alternatively, make -j "${NCPU}" using the native system make.
 # cmake 3.10 neeeds -- before -j.  cmake 3.16 understands -j
 cmake --build . -- -j "${NCPU}"
