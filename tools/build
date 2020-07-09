@@ -76,9 +76,9 @@ case "${OS}" in
 	if ! test -d "${SDKROOT:=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk}" ; then
 	    echo "Warning: $SDKROOT is missing" 1>&2
 	else
-	    echo "Set SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk to use compile"
-	    OSDEF1="-DCMAKE_OSX_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
-	    OSDEF2="-DDEFAULT_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+	    echo "Setting SDKROOT=${SDKROOT}"
+	    OSDEF1="-DCMAKE_OSX_SYSROOT=${SDKROOT}"
+	    OSDEF2="-DDEFAULT_SYSROOT=${SDKROOT}"
 	fi
 	;;
 esac
