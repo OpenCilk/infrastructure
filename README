@@ -16,8 +16,11 @@ Here is a summary of features in this version of OpenCilk:
   -- except that it is not valid to reference the view of a C reducer
   after calling CILK_C_UNREGISTER_REDUCER.
 
-Build instructions and a copy of this document are in
-  https://github.com/OpenCilk/infrastructure/
+Instructions for building OpenCilk from source are in
+  https://github.com/OpenCilk/infrastructure/INSTALLING
+
+A copy of the build instructions and this document are in
+  https://github.com/OpenCilk/infrastructure
 
 Some simple demo Cilk programs are available at
   https://github.com/OpenCilk/tutorial
