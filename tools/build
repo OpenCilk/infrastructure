@@ -95,7 +95,11 @@ cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
 cmake --build . -- -j "${NCPU}"
 # TODO: cmake --install ...
 
-TRIPLE=`"${BUILD_DIR}/bin/clang" -print-target-triple`
+case "${OS}" in
+    # Darwin is a special case.  The version is not embedded in the path.
+    Darwin) TRIPLE=darwin ;; # special case
+    *) TRIPLE=`"${BUILD_DIR}/bin/clang" -print-target-triple` ;;
+esac
 VERSION=`sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt"`
 
 LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/libopencilk.a"
