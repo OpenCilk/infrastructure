@@ -69,26 +69,18 @@ cd "${BUILD_DIR}"
 
 : ${OPENCILK_RELEASE:=Release} # RelWithDebInfo to debug the compiler
 : ${OPENCILK_ASSERTIONS:=ON}   # On for beta
-COMPONENTS="clang"    # Unlikely to change
+COMPONENTS="clang;cheetah"     # Unlikely to change
 case "${OS}" in
     Darwin)
         : ${LIBCXX:="libcxx;"}
-	if ! test -d "${SDKROOT:=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk}" ; then
-	    echo "Warning: $SDKROOT is missing" 1>&2
-	else
-	    echo "Setting SDKROOT=${SDKROOT}"
-	    OSDEF1="-DCMAKE_OSX_SYSROOT=${SDKROOT}"
-	    OSDEF2="-DDEFAULT_SYSROOT=${SDKROOT}"
-	fi
 	;;
 esac
-RUNTIMES="${LIBCXX}compiler-rt;cheetah"
+RUNTIMES="${LIBCXX}compiler-rt"
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
       -DLLVM_ENABLE_RUNTIMES="${RUNTIMES}" \
       -DCOMPILER_RT_BUILD_CILKTOOLS=ON \
       -DLLVM_ENABLE_ASSERTIONS="${OPENCILK_ASSERTIONS:?}" \
       -DCMAKE_BUILD_TYPE="${OPENCILK_RELEASE:?}" \
-      "${OSDEF1}" "${OSDEF2}" \
       "${TAPIR_SOURCE}/llvm"
 # Alternatively, make -j "${NCPU}" using the native system make.
 # cmake 3.10 neeeds -- before -j.  cmake 3.16 understands -j
