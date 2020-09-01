@@ -13,9 +13,7 @@ COPY opencilk.tar.gz /usr/local/src/opencilk.tar.gz
 
 # Step 1: Install build dependencies (TODO: may be possible to install less)
 # Step 2: Untar, build, and install OpenCilk
-# Step 3: Add the location of libopencilk.so to the search path by appending
-#         its location to /etc/ld.so.conf; run ldconfig to pick up the change
-# Step 4: Remove the build files and apt-get cache files
+# Step 3: Remove the build files and apt-get cache files
 RUN echo "Installing packages..." \
   && apt-get update -qq > /dev/null \
   && apt-get install -qqy --no-install-recommends \
@@ -36,7 +34,6 @@ RUN echo "Installing packages..." \
     /usr/local/src/opencilk/build 8 \
   && echo "Installing OpenCilk to default install location..." \
   && cmake --build /usr/local/src/opencilk/build --target install \
-  && echo "Setting up ld path to include the path to libopencilk.so..." \
   && echo "Cleaning temporary files..." \
   && rm -r /usr/local/src/opencilk \
   && rm -rf /var/lib/apt/lists/* \
