@@ -17,10 +17,10 @@ Here is a summary of features in this version of OpenCilk:
   after calling CILK_C_UNREGISTER_REDUCER.
 
 Instructions for building OpenCilk from source are in
-  https://github.com/OpenCilk/infrastructure/INSTALLING
+  https://github.com/OpenCilk/infrastructure/blob/release/INSTALLING
 
 Scripts for building a Docker image with OpenCilk are located in
-  https://github.com/OpenCilk/infrastructure/docker
+  https://github.com/OpenCilk/infrastructure/blob/release/docker
 
 A copy of the build instructions and this document are in
   https://github.com/OpenCilk/infrastructure
