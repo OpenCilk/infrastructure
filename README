@@ -1,17 +1,17 @@
 Welcome to OpenCilk.
 
-This prerelease version is meant for experienced Cilk users running
-Linux or FreeBSD on modern 64 bit x86 chips (Haswell, Excavator, or
-newer).  The compiler is based on LLVM 9 and supports the usual clang
-options.  Use the -fopencilk command line argument and include
-<cilk/cilk.h> to enable the cilk_spawn, cilk_sync, and cilk_for
-keywords.  Both C and C++ are supported.  Exceptions do not work yet
-with Cilk code.  Exceptions must not be allowed to escape a spawned
-function or a block containing an explicit or implicit sync.  Support
-for exceptions is planned for OpenCilk beta in summer of 2020.
-Reducers are supported using hyperobject headers from Intel Cilk Plus,
-except it is not valid to reference the view of a C reducer after
-calling CILK_C_UNREGISTER_REDUCER.
+This beta version is meant for experienced Cilk users running Linux or
+FreeBSD on modern 64 bit x86 chips (Haswell, Excavator, or newer).
+The compiler is based on LLVM 10 and supports the usual clang options.
+
+For most purposes the Cilk features are compatible with Intel's last release
+of Cilk Plus.
+
+Use the -fopencilk command line argument and include <cilk/cilk.h> to
+enable the cilk_spawn, cilk_sync, and cilk_for keywords.  Both C and
+C++ are supported Reducers are supported using hyperobject headers
+from Intel Cilk Plus, except it is not valid to reference the view of
+a C reducer after calling CILK_C_UNREGISTER_REDUCER.
 
 If -fopencilk is used when linking a static copy of the OpenCilk
 runtime from the compiler install directory is used.  To substitute

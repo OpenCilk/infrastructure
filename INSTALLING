@@ -1,4 +1,4 @@
-Welcome to OpenCilk.
+Welcome to OpenCilk v1.0 RC2.
 
 This prerelease version of OpenCilk is available as source code in
 three git repositories.  You will need 1.5 GB of space for the source
@@ -9,12 +9,12 @@ This version only supports 64 bit x86 on Linux or FreeBSD.
 
 Clone these repositories into sibling directories:
 
-git clone -b opencilk/beta2 https://github.com/OpenCilk/infrastructure
-git clone -b opencilk/beta2 --single-branch https://github.com/OpenCilk/opencilk-project
+git clone -b opencilk/v1.0-rc2 https://github.com/OpenCilk/infrastructure
+git clone -b opencilk/v1.0-rc2 --single-branch https://github.com/OpenCilk/opencilk-project
 
 Put the runtime into a subdirectory of the compiler:
 
-git clone -b opencilk/beta2 -- https://github.com/OpenCilk/cheetah opencilk-project/cheetah
+git clone -b opencilk/v1.0-rc2 -- https://github.com/OpenCilk/cheetah opencilk-project/cheetah
 
 Run infrastructure/tools/build with two or three arguments.  The first
 argument is the absolute pathname of the parent directory of the

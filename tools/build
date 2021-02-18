@@ -82,7 +82,7 @@ case "${OS}" in
 	fi
 	;;
 esac
-RUNTIMES="${LIBCXX}compiler-rt;cheetah"
+RUNTIMES="${LIBCXX}cheetah;cilktools;compiler-rt"
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
       -DLLVM_ENABLE_RUNTIMES="${RUNTIMES}" \
       -DCOMPILER_RT_BUILD_CILKTOOLS=ON \
