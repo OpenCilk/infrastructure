@@ -16,12 +16,12 @@ BUILD_DIR="${1:?}"
 NCPU="${2}"
 
 if test -z "${NCPU}" -a -r /proc/cpuinfo ; then
-    NCPU=`grep -c '^processor' /proc/cpuinfo 2> /dev/null`
+    NCPU=$(grep -c '^processor' /proc/cpuinfo 2> /dev/null)
 fi
 
 if test -z "${NCPU}" ; then
     if test -x /sbin/sysctl -o -x /usr/sbin/sysctl ; then
-	NCPU=`PATH=${PATH}:/sbin:/usr/sbin sysctl -n hw.ncpu`
+    NCPU=$(PATH=${PATH}:/sbin:/usr/sbin sysctl -n hw.ncpu)
     fi
 fi
 
@@ -44,7 +44,7 @@ date # Who doesn't love timestamps?
 
 echo "Building with ${NCPU:?} parallel jobs"
 
-OS="`uname -s`"
+OS="$(uname -s)"
 
 # LLVM works with any make.  Cheetah currently requires GNU make.
 #case "${OS}" in
@@ -67,13 +67,12 @@ mkdir -p "${BUILD_DIR}"
 
 cd "${BUILD_DIR}"
 
-: ${OPENCILK_RELEASE:=Release} # RelWithDebInfo to debug the compiler
-: ${OPENCILK_ASSERTIONS:=ON}   # On for beta
 COMPONENTS="clang;cheetah"     # Unlikely to change
+: "${OPENCILK_RELEASE:=Release}" # RelWithDebInfo to debug the compiler
+: "${OPENCILK_ASSERTIONS:=On}"   # Off to disable assertions in the compiler
 case "${OS}" in
     Darwin)
-        : ${LIBCXX:="libcxx;"}
-	;;
+        : "${LIBCXX:="libcxx;"}" ;;
 esac
 RUNTIMES="${LIBCXX}compiler-rt"
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
@@ -87,8 +86,8 @@ cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
 cmake --build . -- -j "${NCPU}"
 # TODO: cmake --install ...
 
-TRIPLE=`"${BUILD_DIR}/bin/clang" -print-target-triple`
-VERSION=`sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt"`
+TRIPLE=$("${BUILD_DIR}/bin/clang" -print-target-triple)
+VERSION=$(sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt")
 
 LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/libopencilk.a"
 
