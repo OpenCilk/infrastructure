@@ -50,12 +50,6 @@ echo "Building with ${NCPU:?} parallel jobs"
 
 OS="$(uname -s)"
 
-# LLVM works with any make.  Cheetah currently requires GNU make.
-#case "${OS}" in
-#    Linux|Darwin) GMAKE=make; ;;
-#    *) GMAKE=gmake ;;
-#esac
-
 if ! test -d "${OPENCILK_SOURCE}/llvm" ; then
     echo "LLVM not found at ${OPENCILK_SOURCE}/llvm" 1>&2
     exit 1
