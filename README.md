@@ -73,7 +73,9 @@ Plus.  Unsupported features include:
 
 ### Contact
 
-Bug reports should be emailed to [bugs@opencilk.org](mailto:bugs@opencilk.org).
+Bug reports should be posted to the 
+[GitHub issue tracker](https://github.com/OpenCilk/opencilk-project/issues)
+or emailed to [bugs@opencilk.org](mailto:bugs@opencilk.org).
 Other queries and comments should be emailed to
 [contact@opencilk.org](mailto:contact@opencilk.org).
 
