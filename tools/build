@@ -71,15 +71,34 @@ cd "${BUILD_DIR}"
 
 : "${OPENCILK_RELEASE:=Release}" # RelWithDebInfo to debug the compiler
 : "${OPENCILK_ASSERTIONS:=On}"   # Off to disable assertions in the compiler
-COMPONENTS="clang;compiler-rt"   # Required components; edit to add extra LLVM projects
+OPENCILK_COMPONENTS="clang"      # Required components; edit to add extra LLVM projects
+OPENCILK_RUNTIMES="cheetah;cilktools" # Required runtimes
+# Add compiler-rt project to enable support for Google sanitizers.
 case "${OS}" in
     Darwin)
-        : "${LIBCXX:="libcxx;"}" ;;
+        : "${COMPILER_RT_RUNTIMES:=";compiler-rt;libcxx"}" ;;
+    *)
+        : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}" ;;
 esac
-RUNTIMES="${LIBCXX}cheetah;cilktools" # Required runtimes
+# TODO: Add support to optionally enable other popular features on
+# systems that support them.  Some example features include:
+#  - LLD, enabled by adding `lld` to the COMPONENTS list.
+#  - LLDB, enabled by adding `lldb` to the COMPONENTS list.
+#  - gold-linker support, enabled by passing the additional flag
+#  `-DLLVM_BINUTILS_INCDIR=<path>` to cmake, where `<path>/plugin-api.h`
+#  exists.  Typically, `<path>` is `/usr/include` on systems that have
+#  the GNU BFD development files installed.
+COMPONENTS="${OPENCILK_COMPONENTS}${COMPILER_RT_COMPONENTS}"
+RUNTIMES="${OPENCILK_RUNTIMES}${COMPILER_RT_RUNTIMES}"
 
+# Note: We restrict the build to enable only architecture targets on
+# the host (via -DLLVM_TARGETS_TO_BUILD=host) in order to work around
+# an issue with recent versions of MacOSX and XCode trying to enable
+# ARM support (c.f., https://trac.macports.org/ticket/61555).  This
+# build restriction also reduces the overall build size.
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
       -DLLVM_ENABLE_RUNTIMES="${RUNTIMES}" \
+      -DLLVM_TARGETS_TO_BUILD=host \
       -DLLVM_ENABLE_ASSERTIONS="${OPENCILK_ASSERTIONS:?}" \
       -DCMAKE_BUILD_TYPE="${OPENCILK_RELEASE:?}" \
       "${OPENCILK_SOURCE}/llvm"
@@ -88,7 +107,11 @@ cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
 cmake --build . -- -j "${NCPU}"
 # TODO: cmake --install ...
 
-TRIPLE=$("${BUILD_DIR}/bin/clang" -print-target-triple)
+case "${OS}" in
+    # Darwin is a special case.  The version is not embedded in the path.
+    Darwin) TRIPLE=darwin ;; # special case
+    *) TRIPLE=$("${BUILD_DIR}/bin/clang" -print-target-triple);;
+esac
 VERSION=$(sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt")
 
 LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/libopencilk.a"
