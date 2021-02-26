@@ -14,14 +14,14 @@ Clone the OpenCilk compiler, runtime, and productivity tool repositories.  The
 Cheetah runtime and OpenCilk tool repositories must be cloned into
 sub-directories of the OpenCilk project directory:
 
-    git clone -b opencilk/v1.0-rc2 --single-branch https://github.com/OpenCilk/opencilk-project
-    git clone -b opencilk/v1.0-rc2 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
-    git clone -b opencilk/v1.0-rc2 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
+    git clone -b opencilk/v1.0-rc3 --single-branch https://github.com/OpenCilk/opencilk-project
+    git clone -b opencilk/v1.0-rc3 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
+    git clone -b opencilk/v1.0-rc3 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
 
 Clone the OpenCilk infrastructure repository, which contains the OpenCilk build
 script:
 
-    git clone -b opencilk/v1.0-rc2 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v1.0-rc3 https://github.com/OpenCilk/infrastructure
 
 ### Building OpenCilk
 
