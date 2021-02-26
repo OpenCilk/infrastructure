@@ -76,7 +76,15 @@ OPENCILK_RUNTIMES="cheetah;cilktools" # Required runtimes
 # Add compiler-rt project to enable support for Google sanitizers.
 case "${OS}" in
     Darwin)
-        : "${COMPILER_RT_RUNTIMES:=";compiler-rt;libcxx"}" ;;
+	# cilktools doesn't build on Darwin+ARM due to cmake problems
+	if test "arm64" = "`uname -m`" ; then
+	    OPENCILK_RUNTIMES="cheetah"
+	    OSDEF="-DCMAKE_SIZEOF_VOID_P=8"
+            : "${COMPILER_RT_RUNTIMES:=";libcxx"}"
+	else
+            : "${COMPILER_RT_RUNTIMES:=";compiler-rt;libcxx"}"
+	fi
+	;;
     *)
         : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}" ;;
 esac
