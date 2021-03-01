@@ -1,13 +1,13 @@
 ## Welcome to OpenCilk!
 
-This repo contains infrastructure tools for building the OpenCilk 1.0 RC2
+This repo contains infrastructure tools for building the OpenCilk 1.0 RC3
 compiler, runtime, and productivity tools.  Specifically, it includes scripts
 for building OpenCilk from source or downloading and installing a pre-built
 docker image of OpenCilk.
 
 ### Supported systems
 
-OpenCilk 1.0 RC2 is targeted to experienced Cilk users running Unix/Linux on
+OpenCilk 1.0 RC3 is targeted to experienced Cilk users running Unix/Linux on
 modern x86_64 processors (e.g., Haswell, Excavator, or newer).  The present
 version has been tested on the following operating systems:
 
@@ -42,7 +42,7 @@ version has been tested on the following operating systems:
   `<cilk/cilkscale.h>`, and includes facilities for benchmarking an application
   on different numbers of parallel cores and visualizing the results.
 
-OpenCilk 1.0 RC2 is largely compatible with Intel's latest release of Cilk
+OpenCilk 1.0 RC3 is largely compatible with Intel's latest release of Cilk
 Plus.  Unsupported features include:
 
 - Cilk Plus array slice notation.
@@ -54,10 +54,10 @@ Plus.  Unsupported features include:
 ### Useful links
 
 - Instructions for building OpenCilk from source:  
-  <https://github.com/OpenCilk/infrastructure/blob/release/INSTALLING.md>
+  [INSTALLING.md](INSTALLING.md)
 
 - Scripts for building a Docker image with OpenCilk:  
-  <https://github.com/OpenCilk/infrastructure/blob/release/docker>
+  [docker](docker)
 
 - Link to the OpenCilk infrastructure GitHub repo:  
   <https://github.com/OpenCilk/infrastructure>
