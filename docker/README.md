@@ -2,7 +2,7 @@ To install the pre-build container image, first install docker.  On Linux, users
 should be added to the docker group so docker commands do not need root
 privileges to execute.  The image can then be loaded into docker by running:
 
-	docker load < docker-opencilk-beta3.tar.gz
+	docker load < docker-opencilk-v1.0.tar.gz
 
 The docker image is constructed from an Ubuntu 18.04 base image, and is built
 according to the procedures in the Dockerfile and build-image.sh files.  This

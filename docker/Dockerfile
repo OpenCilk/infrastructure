@@ -18,20 +18,17 @@ RUN echo "Installing packages..." \
   && apt-get update -qq > /dev/null \
   && apt-get install -qqy --no-install-recommends \
     cmake \
-    g++-8 \
-    gcc-8 \
+    clang \
+    lld \
     make \
     python-minimal \
     libpython2.7-stdlib \
     > /dev/null \
-  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 10 \
-  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 10 \
-  && update-alternatives --install /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-8 10 \
   && echo "Building OpenCilk..." \
   && tar -C /usr/local/src -xzf /usr/local/src/opencilk.tar.gz \
   && mkdir -p /usr/local/src/opencilk/build \
-  && /usr/local/src/opencilk/infrastructure/tools/build /usr/local/src/opencilk \
-    /usr/local/src/opencilk/build 8 \
+  && /usr/local/src/opencilk/infrastructure/tools/build /usr/local/src/opencilk/opencilk-project \
+    /usr/local/src/opencilk/build \
   && echo "Installing OpenCilk to default install location..." \
   && cmake --build /usr/local/src/opencilk/build --target install \
   && echo "Cleaning temporary files..." \

@@ -9,11 +9,20 @@ set -e
 
 echo "Downloading OpenCilk source..."
 
+# Derive the OpenCilk version from the latest Git tag, and determine
+# the image name and final tarball name from that tag.
+TAG="$(git describe --tags --abbrev=0)"
+IMAGE_NAME="$(echo "${TAG}" | sed 's/\//:/g')"
+DOCKER_NAME="$(echo "${TAG}" | sed 's/\//-/g')"
+
 wget -O opencilk-project.tar.gz \
-  https://github.com/OpenCilk/opencilk-project/archive/opencilk/beta3.tar.gz
+  https://github.com/OpenCilk/opencilk-project/archive/"${TAG}".tar.gz
 
 wget -O cheetah.tar.gz \
-  https://github.com/OpenCilk/cheetah/archive/opencilk/beta3.tar.gz
+  https://github.com/OpenCilk/cheetah/archive/"${TAG}".tar.gz
+
+wget -O cilktools.tar.gz \
+  https://github.com/OpenCilk/productivity-tools/archive/"${TAG}".tar.gz
 
 # Unpack the source code
 
@@ -28,10 +37,14 @@ tar -xf opencilk-project.tar.gz -C opencilk/opencilk-project --strip-components 
 mkdir -p opencilk/opencilk-project/cheetah
 tar -xf cheetah.tar.gz -C opencilk/opencilk-project/cheetah --strip-components 1
 
+mkdir -p opencilk/opencilk-project/cilktools
+tar -xf cilktools.tar.gz -C opencilk/opencilk-project/cilktools --strip-components 1
+
 echo "Cleaning up downloaded tar files..."
 
 rm -f opencilk-project.tar.gz
 rm -f cheetah.tar.gz
+rm -f cilktools.tar.gz
 
 echo "Modifying scripts for use in Docker environment..."
 
@@ -39,10 +52,11 @@ echo "Modifying scripts for use in Docker environment..."
 sed -i 's/COMPONENTS=\"clang\"/COMPONENTS=\"clang;lld\"/g' opencilk/infrastructure/tools/build
 
 # This turns off assertions in the compiler, shaving off > 600 MB in size from the binaries.
-sed -i 's/OPENCILK_ASSERTIONS:=ON/OPENCILK_ASSERTIONS:=OFF/g' opencilk/infrastructure/tools/build
+sed -i 's/OPENCILK_ASSERTIONS=ON/OPENCILK_ASSERTIONS=OFF/g' opencilk/infrastructure/tools/build
 
 # Only build for the host architecture, shaving off > 600 MB from the binaries.
-sed -i 's/cmake -D/cmake -DLLVM_TARGETS_TO_BUILD=host -D/g' opencilk/infrastructure/tools/build
+# Use clang and lld to build OpenCilk
+sed -i 's/cmake -D/cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_ENABLE_LLD=On -D/g' opencilk/infrastructure/tools/build
 
 # Tar the source. We want to copy in the tar ball to save space; if we copy it in
 # uncompressed, docker will hold onto the uncompressed data even if we compress it
@@ -62,10 +76,10 @@ rm -rf opencilk
 
 echo "Building Docker image..."
 
-docker build -t opencilk:beta3 .
+docker build -t "${IMAGE_NAME}" .
 
 # Dump the container image
 
 echo "Compressing the Docker image for binary distribution..."
 
-docker save opencilk:beta3 | gzip > docker-opencilk-beta3.tar.gz
+docker save "${IMAGE_NAME}" | gzip > docker-"${DOCKER_NAME}".tar.gz
