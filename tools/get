@@ -1,0 +1,44 @@
+#!/bin/sh
+
+usage() {
+    printf "USAGE:\n"
+    printf "%s source-dir\n" "$0"
+    printf "\tClone the OpenCilk source into the directory source-dir.\n"
+    exit 1
+}
+
+# Source directory for OpenCilk (root of the opencilk-project repository tree).
+# Must be an absolute pathname.
+while [ $# -gt 0 ]
+do
+    case "$1" in
+	/*)
+	    OPENCILK_SOURCE="$1"
+	    shift;;
+	-h|-help|--help) usage;;
+	-*) echo "unknown option $1"; exit 1;;
+	*) echo "First argument ($1) must be absolute pathname"; exit 1;;
+    esac
+done
+
+if test -z "${OPENCILK_SOURCE}" ; then
+    usage
+fi
+
+set -ex
+
+# Set the directories into which to clone cheetah and productivity-tools.
+CHEETAH_SOURCE="${OPENCILK_SOURCE:?}/cheetah"
+CILKTOOLS_SOURCE="${OPENCILK_SOURCE:?}/cilktools"
+
+# We shall clone the three OpenCilk source repositories using the same
+# tag as this infrastructure repository.
+TAG="$(git describe --tags --abbrev=0)"
+
+# Clone the three OpenCilk source repositories.
+git clone -b "${TAG}" https://github.com/OpenCilk/opencilk-project "${OPENCILK_SOURCE}"
+git clone -b "${TAG}" https://github.com/OpenCilk/cheetah "${CHEETAH_SOURCE}"
+git clone -b "${TAG}" https://github.com/OpenCilk/productivity-tools "${CILKTOOLS_SOURCE}"
+
+# Report that the clone succeeded.
+printf "Clone completed successfully.  Any messages above about 'detached HEAD' states are expected behavior.\n"
