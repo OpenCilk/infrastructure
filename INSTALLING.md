@@ -25,7 +25,7 @@ More details on build requirements for LLVM can be found here:
 
 Clone the OpenCilk infrastructure repository:
 
-    git clone -b opencilk/v1.0-rc3 https://github.com/OpenCilk/infrastructure
+    git clone -b dev https://github.com/OpenCilk/infrastructure
 
 Run the following script to get the OpenCilk source code:
 
