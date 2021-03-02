@@ -35,6 +35,9 @@ Then run the following script to build OpenCilk:
 
     infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
 
+You should now be ready to use OpenCilk.  Skip to **Usage** now, or read
+on for more explicit directions on building OpenCilk from source.
+
 ### Obtaining the OpenCilk source code
 
 Clone the OpenCilk compiler, runtime, and productivity tool repositories.  The
@@ -99,14 +102,6 @@ You can run the OpenCilk C compiler out of its build tree, adding `/bin/clang`
 to the build directory name.  Similarly, add `/bin/clang++` for the OpenCilk C++
 compiler.
 
-You can also install OpenCilk into a directory of your choosing by
-running the `cmake_install.cmake` script generated in the build
-directory.  For example, run the following to install OpenCilk into
-the directory `/tmp/llvm`:
-
-    cd build
-    cmake -DCMAKE_INSTALL_PREFIX=/tmp/llvm -P cmake_install.cmake
-
 You must have a chip with Intel's Advanced Vector Instructions (AVX).  This
 includes Sandy Bridge and newer Intel processors (released starting in 2011), and
 Steamroller and newer AMD processors (released starting in 2014).
@@ -118,6 +113,16 @@ with `xcrun`; for example:
 
     xcrun $(pwd)/build/bin/clang
 
+#### Optional: Installing OpenCilk
+
+You can install OpenCilk into a directory of your choosing by
+running the `cmake_install.cmake` script generated in the build
+directory.  For example, run the following to install OpenCilk into
+the directory `/tmp/llvm`:
+
+    cd $(pwd)/build
+    cmake -DCMAKE_INSTALL_PREFIX=/tmp/llvm -P cmake_install.cmake
+    
 ### Troubleshooting
 
 Here are a few common problems encountered when building from source,
@@ -130,7 +135,7 @@ physical memory available on the system.  Building OpenCilk from
 source with many parallel build threads can consume a large amount of
 physical memory, roughly speaking, in the tens of gigabytes.
 
-_Fix:_ Try reducing the number of parallel threads for building
+**Fix:** Try reducing the number of parallel threads for building
 OpenCilk.  Alternatively, try building OpenCilk from source using
 `clang` and LLVM's linker, `lld`, which tends to consume less physical
 memory than `ld`.
@@ -141,5 +146,5 @@ This error typically occurs when the C and C++ compilers on the
 system are mismatched, e.g., if `gcc` and `g++` refer to different
 compiler versions on the system.
 
-_Fix:_ Make sure that the versions of `gcc` and `g++` installed on the
+**Fix:** Make sure that the versions of `gcc` and `g++` installed on the
 system are consistent.
