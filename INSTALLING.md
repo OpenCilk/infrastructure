@@ -2,8 +2,8 @@
 
 OpenCilk is available as source code in three Git repositories, plus
 this infrastructure facilities repository.  OpenCilk v1.0 is only
-guaranteed to support 64-bit x86 on Linux or Unix-like operating
-systems, although prototype support for ARM is included.
+guaranteed to support 64-bit x86 on Linux and other Unix-like operating
+systems, although prototype support for 64 bit ARM is included.
 
 ### Requirements
 
@@ -15,8 +15,8 @@ Linux or MacOSX, you will need the following:
 capable of building LLVM.  Any compiler you are likely to have
 installed on a modern multicore system should work.
 - CMake version 3.9 or newer.
-- Approximately 1.8 GB of space for the source code (mostly LLVM) plus
-3.5 GB of space to build, for a total of 5.3 GB.
+- Approximately 1.5 GB of space for the source code (mostly LLVM) plus
+2.5 GB of space to build, for a total of 4 GB.
 
 More details on build requirements for LLVM can be found here:
 <https://llvm.org/docs/GettingStarted.html#requirements>
@@ -102,9 +102,15 @@ You can run the OpenCilk C compiler out of its build tree, adding `/bin/clang`
 to the build directory name.  Similarly, add `/bin/clang++` for the OpenCilk C++
 compiler.
 
-You must have a chip with Intel's Advanced Vector Instructions (AVX).  This
-includes Sandy Bridge and newer Intel processors (released starting in 2011), and
-Steamroller and newer AMD processors (released starting in 2014).
+Running on x86, you must have a chip with Intel's Advanced Vector
+Instructions (AVX).  This includes Sandy Bridge and newer Intel
+processors (released starting in 2011), and Steamroller and newer AMD
+processors (released starting in 2014).
+
+Any 64 bit ARM should work.  In particular, OpenCilk has been tested
+on Apple's M1.  It may be helpful to try different values of the
+CILK_NWORKERS environment variable on chips like the M1 that mix low-
+and high-power cores.
 
 On MacOSX, you will need an XCode or CommandLineTools installation to
 provide standard system libraries and header files for clang.  To run
