@@ -33,7 +33,9 @@ CILKTOOLS_SOURCE="${OPENCILK_SOURCE:?}/cilktools"
 
 # We shall clone the three OpenCilk source repositories using the same
 # tag as this infrastructure repository.
+cd "$(dirname "$0" )"
 TAG="$(git describe --tags --abbrev=0)"
+cd -
 
 # Clone the three OpenCilk source repositories.
 git clone -b "${TAG}" https://github.com/OpenCilk/opencilk-project "${OPENCILK_SOURCE}"
