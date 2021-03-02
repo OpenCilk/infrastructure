@@ -14,7 +14,7 @@ version has been tested on the following operating systems:
 - Ubuntu 18.04 and 20.04
   - including via the Windows Subsystem for Linux v2 (WSL2) on Windows 10
 - FreeBSD 12.1
-- Fedora 30
+- Fedora 32
 - Mac OS X 10.15
 
 ### Summary of OpenCilk features
