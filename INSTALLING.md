@@ -35,7 +35,7 @@ Then run the following script to build OpenCilk:
 
     infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
 
-You should now be ready to use OpenCilk.  Skip to **Usage** now, or read
+You should now be ready to use OpenCilk.  Skip to [Usage](INSTALLING.md#Usage) now, or read
 on for more explicit directions on building OpenCilk from source.
 
 ### Obtaining the OpenCilk source code
