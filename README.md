@@ -11,7 +11,7 @@ OpenCilk 1.0 should work on the following processors:
 
 - Intel x86 processors, Haswell and newer
 - AMD x86 processors, Excavator and newer
-- Apple M1 and other 64 bit ARM processors (this is the beta release of ARM support)
+- Apple M1 and other 64 bit ARM processors (OpenCilk 1.0 includes a beta release of ARM support)
 
 The present version has been tested on the following operating systems:
 
