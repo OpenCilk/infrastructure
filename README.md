@@ -11,7 +11,7 @@ OpenCilk 1.0 should work on the following processors:
 
 - Intel x86 processors, Haswell and newer
 - AMD x86 processors, Excavator and newer
-- Apple M1 and other 64 bit ARM processors (OpenCilk 1.0 includes a beta release of ARM support)
+- [Beta] Apple M1 and other 64-bit ARM processors
 
 The present version has been tested on the following operating systems:
 
@@ -49,11 +49,60 @@ The present version has been tested on the following operating systems:
 OpenCilk 1.0 is largely compatible with Intel's latest release of Cilk
 Plus.  Unsupported features include:
 
-- Cilk Plus array slice notation.
-- Certain functions of the Cilk Plus API, such as `__cilkrts_set_param()`.
+- Cilk Plus array-slice notation.
+- Certain Cilk Plus API functions, such as `__cilkrts_set_param()`.
+
+### Porting Cilk Plus code to OpenCilk
+
+To port a Cilk Plus program to OpenCilk, once all uses of unsupported features 
+have been updated, make the following changes to your build process:
+
+- When compiling the program, replace any uses of `-fcilkplus` with `-fopencilk`.
+- When linking the program, replace any uses of `-lcilkrts` with `-fopencilk`.
 
 [llvm-10-doc]:  https://releases.llvm.org/10.0.0/docs/index.html
 [clang-10-doc]: https://releases.llvm.org/10.0.0/tools/clang/docs/index.html
+
+### Known limitations
+
+- We are preparing more complete documentation for OpenCilk, including the 
+Cilkscale and Cilksan APIs.  Stay tuned!
+- AddressSanitizer may not work correctly on OpenCilk programs.  For example,
+OpenCilk programs employ stack switching that AddressSanitizer does not
+currently recognize and handle correctly.  This may cause AddressSanitizer to
+appear to hang and use a large amount of memory.
+- The OpenCilk runtime system limits the number of active reducers to 1024.
+- Similarly to C/C++ programs, large stack allocations can cause memory
+errores due to overflowing OpenCilk's cactus stack.
+- There are some functions library and LLVM intrinsic functions that Cilksan
+does not recognize.  When Cilksan fails to recognize such a function, it may
+produce a link-time error of the form, `undefined reference to '__csan_FUNC'`
+for some function name `__csan_FUNC`.
+  - Please report these missing functions to us as bug reports when you
+encounter them.
+  - While we prepare a fix for the issue, you can work around the issue
+by adding the following code to your program, replacing `__csan_FUNC` with
+the name of the function in the error message:
+```cpp
+#ifdef __cilksan__
+#ifdef __cplusplus
+extern "C" {
+#endif
+void __csan_default_libhook(uint64_t call_id, uint64_t func_id, unsigned count);
+void __csan_FUNC(uint64_t call_id, uint64_t func_id, unsigned count) {
+  __csan_default_libhook(call_id, func_id, count);
+}
+#ifdef __cplusplus
+}
+#endif
+#endif
+```
+- When building shared libraries with Cilkscale, you may need to manually link
+the Cilkscale dynamic library with the shared library, rather than simply use
+-fcilktool=cilkscale at link time.  The Cilkscale dynamic library, named
+`libclang_rt.cilkscale.so` on Linux and
+`libclang_rt.cilkscale_osx_dynamic.dylib` on Mac OS X, can be found in a
+subdirectory under `lib` within the build or install directory of OpenCilk.
 
 ### Useful links
 
@@ -85,11 +134,11 @@ Other queries and comments should be emailed to
 
 ### OpenCilk development team
 
-- Tao B. Schardl, MIT --- Director, Chief Architect
-- I-Ting Angelina Lee, WUSTL --- Director, Runtime Architect
-- John F. Carr, consultant --- Senior Programmer
-- Dorothy Curtis, MIT --- Project Manager
-- Charles E. Leiserson, MIT --- Executive Director
+- Tao B. Schardl, MIT — Director, Chief Architect
+- I-Ting Angelina Lee, WUSTL — Director, Runtime Architect
+- John F. Carr, consultant — Senior Programmer
+- Dorothy Curtis, MIT — Project Manager
+- Charles E. Leiserson, MIT — Executive Director
 - Alexandros-Stavros Iliopoulos, MIT, postdoc
 - Tim Kaler, MIT, postdoc
 - Grace Q. Yin, MIT, intern
