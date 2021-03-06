@@ -63,7 +63,7 @@ have been updated, make the following changes to your build process:
 [llvm-10-doc]:  https://releases.llvm.org/10.0.0/docs/index.html
 [clang-10-doc]: https://releases.llvm.org/10.0.0/tools/clang/docs/index.html
 
-### Known limitations
+### Known issues
 
 - We are preparing more complete documentation for OpenCilk, including the 
 Cilkscale and Cilksan APIs.  Stay tuned!
@@ -99,8 +99,8 @@ void __csan_FUNC(uint64_t call_id, uint64_t func_id, unsigned count) {
 ```
 - When building shared libraries with Cilkscale, you may need to manually link
 the Cilkscale dynamic library with the shared library, rather than simply use
--fcilktool=cilkscale at link time.  The Cilkscale dynamic library, named
-`libclang_rt.cilkscale.so` on Linux and
+`-fcilktool=cilkscale` at link time for Cilkscale to behave correctly.  The
+Cilkscale dynamic library, named `libclang_rt.cilkscale.so` on Linux and
 `libclang_rt.cilkscale_osx_dynamic.dylib` on Mac OS X, can be found in a
 subdirectory under `lib` within the build or install directory of OpenCilk.
 
