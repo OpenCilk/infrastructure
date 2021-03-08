@@ -52,6 +52,14 @@ Plus.  Unsupported features include:
 - Cilk Plus array-slice notation.
 - Certain Cilk Plus API functions, such as `__cilkrts_set_param()`.
 
+### How to get OpenCilk
+
+Precompiled binaries for OpenCilk 1.0 are available for some systems here: https://github.com/OpenCilk/opencilk-project/releases/tag/opencilk%2Fv1.0.  To install, either download and run the appropriate shell archive (i.e., `.sh` file) or unpack the appropriate tarball.
+
+A docker image for Ubuntu 18.04 with OpenCilk 1.0 installed is available here: https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv1.0/docker-opencilk-v1.0.tar.gz.  Some documentation on how to use the docker image can be found here: [docker](docker).
+
+For other systems, instructions for downloading and building OpenCilk from source can be found here: [INSTALLING.md](INSTALLING.md).
+
 ### Porting Cilk Plus code to OpenCilk
 
 To port a Cilk Plus program to OpenCilk, once all uses of unsupported features 
