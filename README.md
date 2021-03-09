@@ -150,3 +150,9 @@ Other queries and comments should be emailed to
 - Alexandros-Stavros Iliopoulos, MIT, postdoc
 - Tim Kaler, MIT, postdoc
 - Grace Q. Yin, MIT, intern
+
+### Acknowledgments
+
+OpenCilk is supported in part by the National Science Foundation under grant number CCRI-1925609.
+
+Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
