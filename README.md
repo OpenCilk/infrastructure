@@ -153,6 +153,6 @@ Other queries and comments should be emailed to
 
 ### Acknowledgments
 
-OpenCilk is supported in part by the National Science Foundation under grant number CCRI-1925609.
+OpenCilk is supported in part by the National Science Foundation, under grant number CCRI-1925609, and in part by the [USAF-MIT AI Accelerator](https://aia.mit.edu/), which is sponsored by United States Air Force Research Laboratory under Cooperative Agreement Number FA8750-19-2-1000.
 
-Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and should not be interpreted as representing the official policies or views, either expressed or implied, of the United states Air Force, the U.S. Government, or the National Science Foundation.  The U.S. Government is authorized to reproduce and distribute reprints for Government purposes notwithstanding any copyright notation herein.
