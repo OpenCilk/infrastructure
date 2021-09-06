@@ -75,9 +75,14 @@ cd "${BUILD_DIR}"
 OPENCILK_COMPONENTS="clang"      # Required components; edit to add extra LLVM projects
 OPENCILK_RUNTIMES="cheetah;cilktools" # Required runtimes
 # Add compiler-rt project to enable support for Google sanitizers.
+# On some systems compiler-rt needs to be a runtime rather than
+# a component.  Leaving it as a component for Linux is helpful
+# for compiler testing.
 case "${OS}" in
     Darwin)
-        : "${COMPILER_RT_RUNTIMES:=";compiler-rt;libcxx"}" ;;
+        : "${COMPILER_RT_COMPONENTS:=";compiler-rt;libcxx;libcxxabi"}" ;;
+    *BSD)
+        : "${COMPILER_RT_RUNTIMES:=";compiler-rt"}" ;;
     *)
         : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}" ;;
 esac
@@ -99,7 +104,6 @@ RUNTIMES="${OPENCILK_RUNTIMES}${COMPILER_RT_RUNTIMES}"
 # build restriction also reduces the overall build size.
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
       -DLLVM_ENABLE_RUNTIMES="${RUNTIMES}" \
-      -DLLVM_TARGETS_TO_BUILD=host \
       -DLLVM_ENABLE_ASSERTIONS="${OPENCILK_ASSERTIONS:?}" \
       -DCMAKE_BUILD_TYPE="${OPENCILK_RELEASE:?}" \
       "${OPENCILK_SOURCE}/llvm"
