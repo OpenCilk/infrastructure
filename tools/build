@@ -112,12 +112,18 @@ cmake --build . -- -j "${NCPU}"
 
 case "${OS}" in
     # Darwin is a special case.  The version is not embedded in the path.
-    Darwin) TRIPLE=darwin ;; # special case
-    *) TRIPLE=$("${BUILD_DIR}/bin/clang" -print-target-triple);;
+    Darwin)
+	TRIPLE=darwin
+	LIBNAME=libopencilk_osx.a
+	;;
+    *)
+	TRIPLE=$("${BUILD_DIR}/bin/clang" -print-target-triple)
+	LIBNAME=libopencilk.a
+	;;
 esac
 VERSION=$(sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt")
 
-LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/libopencilk.a"
+LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/${LIBNAME:?}"
 
 # Cheetah should have been built as part of LLVM
 if ! test -f "${LIBPATH}" ; then
