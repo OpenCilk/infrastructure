@@ -52,7 +52,7 @@ echo "Modifying scripts for use in Docker environment..."
 sed -i 's/COMPONENTS=\"clang\"/COMPONENTS=\"clang;lld\"/g' opencilk/infrastructure/tools/build
 
 # This turns off assertions in the compiler, shaving off > 600 MB in size from the binaries.
-sed -i 's/OPENCILK_ASSERTIONS=ON/OPENCILK_ASSERTIONS=OFF/g' opencilk/infrastructure/tools/build
+sed -i 's/OPENCILK_ASSERTIONS=On/OPENCILK_ASSERTIONS=Off/g' opencilk/infrastructure/tools/build
 
 # Only build for the host architecture, shaving off > 600 MB from the binaries.
 # Use clang and lld to build OpenCilk

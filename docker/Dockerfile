@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # NOTE: Don't use ADD; ADD will decompress the file
 COPY opencilk.tar.gz /usr/local/src/opencilk.tar.gz
@@ -21,8 +21,7 @@ RUN echo "Installing packages..." \
     clang \
     lld \
     make \
-    python-minimal \
-    libpython2.7-stdlib \
+    python3-minimal \
     > /dev/null \
   && echo "Building OpenCilk..." \
   && tar -C /usr/local/src -xzf /usr/local/src/opencilk.tar.gz \
