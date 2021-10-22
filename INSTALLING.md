@@ -1,9 +1,10 @@
 ## Instructions for building OpenCilk from source
 
 OpenCilk is available as source code in three Git repositories, plus
-this infrastructure facilities repository.  OpenCilk 1.0 is only
-guaranteed to support 64-bit x86 on Linux and other Unix-like operating
-systems, although prototype support for 64-bit ARM is included.
+this infrastructure facilities repository.  OpenCilk 1.1 is only
+guaranteed to support 64-bit x86 on Linux and other Unix-like
+operating systems, although prototype support for 64-bit ARM is
+included.
 
 ### Requirements
 
@@ -14,7 +15,7 @@ Linux or MacOSX, you will need the following:
 - A relatively modern C/C++ compiler, such as GCC or Clang, that is
 capable of building LLVM.  Any compiler you are likely to have
 installed on a modern multicore system should work.
-- CMake version 3.9 or newer.
+- CMake version 3.13.4 or newer.
 - Approximately 1.5 GB of space for the source code (mostly LLVM) plus
 2.5 GB of space to build, for a total of 4 GB.
 
@@ -25,7 +26,7 @@ More details on build requirements for LLVM can be found here:
 
 Clone the OpenCilk infrastructure repository:
 
-    git clone -b opencilk/v1.0 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v1.1 https://github.com/OpenCilk/infrastructure
 
 Run the following script to get the OpenCilk source code:
 
@@ -44,9 +45,9 @@ Clone the OpenCilk compiler, runtime, and productivity tool repositories.  The
 Cheetah runtime and OpenCilk tool repositories must be cloned into
 sub-directories of the OpenCilk project directory:
 
-    git clone -b opencilk/v1.0 https://github.com/OpenCilk/opencilk-project
-    git clone -b opencilk/v1.0 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
-    git clone -b opencilk/v1.0 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
+    git clone -b opencilk/v1.1 https://github.com/OpenCilk/opencilk-project
+    git clone -b opencilk/v1.1 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
+    git clone -b opencilk/v1.1 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
 
 Note that, because these commands clone specific tags of the OpenCilk
 repositories, it is normal for Git to report that each clone is in a
@@ -55,7 +56,7 @@ repositories, it is normal for Git to report that each clone is in a
 Clone the OpenCilk infrastructure repository, which contains the OpenCilk build
 script:
 
-    git clone -b opencilk/v1.0 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v1.1 https://github.com/OpenCilk/infrastructure
 
 ### Building OpenCilk
 
@@ -98,9 +99,9 @@ To echo the OpenCilk build script call syntax, use the `--help` switch:
 
 ### Usage
 
-You can run the OpenCilk C compiler out of its build tree, adding `/bin/clang`
-to the build directory name.  Similarly, add `/bin/clang++` for the OpenCilk C++
-compiler.
+You can run the OpenCilk C compiler out of its build tree, adding
+`/bin/clang` to the build directory name.  Similarly, add
+`/bin/clang++` for the OpenCilk C++ compiler.
 
 Running on x86, you must have a chip with Intel's Advanced Vector
 Instructions (AVX).  This includes Sandy Bridge and newer Intel
@@ -109,7 +110,7 @@ processors (released starting in 2014).
 
 OpenCilk should work on any 64-bit ARM via its experimental ARM
 support.  In particular, OpenCilk has been tested on Apple's M1.  It
-may be helpful to try different values of the CILK_NWORKERS
+may be helpful to try different values of the `CILK_NWORKERS`
 environment variable on chips like the M1 that mix low- and high-power
 cores.
 
@@ -135,7 +136,8 @@ the directory `/tmp/llvm`:
 Here are a few common problems encountered when building from source,
 along with suggested workarounds.
 
-> The build fails with the error message, `collect2: error: ld returned 1 exit status`.
+> The build fails with the error message, `collect2: error: ld
+  returned 1 exit status`.
 
 This error typically occurs when the build process exhausts the
 physical memory available on the system.  Building OpenCilk from
@@ -147,7 +149,8 @@ OpenCilk.  Alternatively, try building OpenCilk from source using
 `clang` and LLVM's linker, `lld`, which tends to consume less physical
 memory than `ld`.
 
-> The build fails with the error message, `unrecognized argument to '-fno-sanitize=' option: 'safe-stack'`.
+> The build fails with the error message, `unrecognized argument to
+  '-fno-sanitize=' option: 'safe-stack'`.
 
 This error typically occurs when the C and C++ compilers on the
 system are mismatched, e.g., if `gcc` and `g++` refer to different
