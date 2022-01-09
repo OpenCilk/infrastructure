@@ -1,4 +1,4 @@
-## Notes for OpenCilk developers
+# Notes for OpenCilk developers
 
 This document is meant for anyone modifying the OpenCilk codebase,
 that is, the code in the opencilk-project, cheetah, or
@@ -6,7 +6,7 @@ productivity-tools repos.  If you are trying to debug a problem with
 the OpenCilk system, or if you are conducting research that involves
 modifying these codebases, these notes may be helpful to you.
 
-## Working with LLVM and the OpenCilk compiler
+# Working with LLVM and the OpenCilk compiler
 
 Because the OpenCilk compiler is based on LLVM, the techniques for
 working with LLVM can be used to on the OpenCilk compiler as well.
@@ -17,7 +17,7 @@ These notes assume that the reader has some basic familiarity with
 LLVM and reading LLVM IR.  For more information on LLVM, consult the
 [LLVM documentation](https://llvm.org/docs/).
 
-### Note: Tapir
+## Note: Tapir
 
 The OpenCilk compiler uses the ***Tapir*** extension to LLVM IR to
 compile Cilk code.  Tapir adds three instructions to LLVM IR to
@@ -30,7 +30,7 @@ and an [ACM TOPC article](https://dl.acm.org/doi/10.1145/3365655).
 In the following notes, unless otherwise specified, any instructions
 and notes concerning LLVM IR apply to Tapir as well.
 
-### How to emit LLVM IR: `-S -emit-llvm`
+## How to emit LLVM IR: `-S -emit-llvm`
 
 To make `clang` emit LLVM IR for a given C or C++ program, pass the
 additional flags `-S -emit-llvm` when compiling the program.  For
@@ -54,7 +54,7 @@ IR.  If you pass `-emit-llvm` without `-S` to `clang`, then it will
 output LLVM bitcode.  Many LLVM tools can operate on LLVM bitcode
 directly, but it is not human-readable.
 
-#### How to emit Tapir: `-ftapir=none`
+### How to emit Tapir: `-ftapir=none`
 
 If you compile a Cilk program with `-fopencilk`, the OpenCilk compiler
 will compile and optimize the code and then *lower* the Tapir
@@ -80,13 +80,13 @@ the OpenCilk runtime system.  In contrast the command
 will emit the LLVM IR with all Tapir instructions, that is, before the
 Tapir instructions have been lowered.
 
-### Editor modes for reading LLVM IR
+## Editor modes for reading LLVM IR
 
 Many editors support LLVM IR modes that make reading LLVM IR easier.
 LLVM IR modes for some editors are also available in the
 opencilk-project repo, under `llvm/utils`.
 
-### How to run a particular LLVM pass: `opt`
+## How to run a particular LLVM pass: `opt`
 
 The `opt` tool allows you to run LLVM analysis and optimization passes
 directly on a given LLVM IR file.  For example, the following command
@@ -118,7 +118,7 @@ The `opt` tool also recognizes similar optimization levels to `clang`,
 including `-O1`, `-O2`, and `-O3`.  Run `opt -help` or `opt
 -help-hidden` for more information on the flags that `opt` recognizes.
 
-### How to emit unoptimized LLVM IR that is ready for optimization: `-Xclang -disable-llvm-passes`
+## How to emit unoptimized LLVM IR that is ready for optimization: `-Xclang -disable-llvm-passes`
 
 Suppose you want to run LLVM's optimizations by hand on a C/C++ or
 Cilk program.  Recall that the LLVM compiler (and the OpenCilk
@@ -144,7 +144,7 @@ and annotated for optimizations, pass the additional flags `-Xclang
 
 	clang++ foo.cpp -fopencilk -O3 -S -emit-llvm -o foo.ll -Xclang -disable-llvm-passes
 
-### How to generate a picture of the LLVM IR: `opt -dot-cfg`
+## How to generate a picture of the LLVM IR: `opt -dot-cfg`
 
 LLVM IR models each function in a program as a control-flow graph
 (CFG), and it can be useful to view that CFG graphically, rather in
@@ -170,7 +170,7 @@ that can be useful to look at as well, such as the call graph.  See
 the options named `--dot-<something>` in `opt -help` to see what other
 graphs `opt` can produce.
 
-## Debugging the OpenCilk compiler
+# Debugging the OpenCilk compiler
 
 These notes describe tools and techniques that are typically useful
 for debugging the OpenCilk compiler.
@@ -178,7 +178,7 @@ for debugging the OpenCilk compiler.
 For more information on debugging LLVM, see [LLVM's documentation on
 submitting bug reports](https://llvm.org/docs/HowToSubmitABug.html).
 
-### How to see what passes are run: `-debug-pass=`
+## How to see what passes are run: `-debug-pass=`
 
 Suppose you want to see, when a given optimization level is specified,
 what passes will run and in what order.  You can use the flag
@@ -217,7 +217,7 @@ pipeline of LLVM passes that runs.  Here are several key uses of
   executed, including information of analysis passes that are
   invalidated and rerun.
 
-### Reducing a compiler crash using `bugpoint`
+## Reducing a compiler crash using `bugpoint`
 
 Suppose you are debugging a compiler crash when its running
 optimizations on a particular input.  For example, suppose that the
@@ -265,7 +265,7 @@ might be the same.
 For more information on `bugpoint`, see [its LLVM
 documentation](https://llvm.org/docs/Bugpoint.html).
 
-### Reducing a compiler bug using `llvm-reduce`
+## Reducing a compiler bug using `llvm-reduce`
 
 The `llvm-reduce` tool can also be used to reduce LLVM IR input that
 leads to a crash, similarly to `bugpoint`.  The `llvm-reduce` tool
@@ -314,7 +314,7 @@ passes `-simplifycfg`, with the option `-keep-loops=false`, and
 The following lines check if `opt` produced an error and returns the
 appropriate interestingness result accordingly.
 
-### Tricks for diving into an unfamiliar LLVM pass
+## Tricks for diving into an unfamiliar LLVM pass
 
 Suppose you're trying to understand how a particular LLVM pass works.
 For instance, the pass might be misbehaving on some input, and you
@@ -353,7 +353,7 @@ state you would like to examine at some point in the middle of an LLVM
 pass, you can print it by adding `llvm::dbgs() << V` to the pass, then
 recompiling the compiler and rerunning.
 
-### How to see the LLVM IR before or after each pass: `-print-before-all` and `-print-after-all`
+## How to see the LLVM IR before or after each pass: `-print-before-all` and `-print-after-all`
 
 Suppose you want to examine the state of the LLVM IR before or after
 each transformation pass that runs when compiling a program.  For
@@ -389,11 +389,11 @@ a large number of optimization passes.  It is often helpful to pipe
 that output to a separate file and then search the output after the
 fact.
 
-## Debugging the OpenCilk runtime
+# Debugging the OpenCilk runtime
 
 TODO: Fill this in
 
-## Debugging Cilksan and Cilkscale
+# Debugging Cilksan and Cilkscale
 
 TODO: Fill this in
 
