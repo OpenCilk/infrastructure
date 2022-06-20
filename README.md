@@ -14,6 +14,7 @@ OpenCilk 1.1 has been tested on the following processor architectures:
 - [Beta] Apple M1 and other 64-bit ARM processors
 
 The present version has been tested on the following operating systems:
+Note: non-Mac OS systems require the installation of GCC (or equivalent): this provides necessary include files and system libraries.  Any compiler you are likely to have installed on a modern multicore system should work.
 
 - Ubuntu 18.04 and 20.04
   - including via the Windows Subsystem for Linux v2 (WSL2) on Windows 10
