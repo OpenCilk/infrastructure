@@ -75,16 +75,29 @@ cd "${BUILD_DIR}"
 OPENCILK_COMPONENTS="clang"      # Required components; edit to add extra LLVM projects
 OPENCILK_RUNTIMES="cheetah;cilktools" # Required runtimes
 # Add compiler-rt project to enable support for Google sanitizers.
-# On some systems compiler-rt needs to be a runtime rather than
-# a component.  Leaving it as a component for Linux is helpful
-# for compiler testing.
 case "${OS}" in
     Darwin)
-        : "${COMPILER_RT_COMPONENTS:=";compiler-rt;libcxx;libcxxabi"}" ;;
+        : "${COMPILER_RT_COMPONENTS:=";compiler-rt;libcxx;libcxxabi"}"
+        # Note: We restrict the build to enable only architecture targets on
+        # the host (via -DLLVM_TARGETS_TO_BUILD=host) in order to work around
+        # an issue with recent versions of MacOSX and XCode trying to enable
+        # ARM support (c.f., https://trac.macports.org/ticket/61555).
+        TARGETS="host"
+        ;;
     *BSD)
-        : "${COMPILER_RT_RUNTIMES:=";compiler-rt"}" ;;
+        # An older version required compiler-rt in OPENCILK_RUNTIMES
+        # but the combination of FreeBSD 13.1 and LLVM 14 does not.
+        # If compiler-rt is moved back to RUNTIMES the asan variant
+        # of Cheetah's personality.c file may need an explicit
+        # dependency on the asan library in compiler-rt.
+        : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
+        # Standard FreeBSD target list
+        TARGETS="AArch64;ARM;Mips;PowerPC;RISCV;Sparc;X86"
+        ;;
     *)
-        : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}" ;;
+        : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
+        TARGETS="AArch64;X86"
+        ;;
 esac
 # TODO: Add support to optionally enable other popular features on
 # systems that support them.  Some example features include:
@@ -97,15 +110,12 @@ esac
 COMPONENTS="${OPENCILK_COMPONENTS}${COMPILER_RT_COMPONENTS}"
 RUNTIMES="${OPENCILK_RUNTIMES}${COMPILER_RT_RUNTIMES}"
 
-# Note: We restrict the build to enable only architecture targets on
-# the host (via -DLLVM_TARGETS_TO_BUILD=host) in order to work around
-# an issue with recent versions of MacOSX and XCode trying to enable
-# ARM support (c.f., https://trac.macports.org/ticket/61555).  This
-# build restriction also reduces the overall build size.
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
       -DLLVM_ENABLE_RUNTIMES="${RUNTIMES}" \
       -DLLVM_ENABLE_ASSERTIONS="${OPENCILK_ASSERTIONS:?}" \
+      -DLLVM_TARGETS_TO_BUILD="${TARGETS:?}" \
       -DCMAKE_BUILD_TYPE="${OPENCILK_RELEASE:?}" \
+      -DLLVM_OPTIMIZED_TABLEGEN=On \
       "${OPENCILK_SOURCE}/llvm"
 # Alternatively, make -j "${NCPU}" using the native system make.
 # cmake 3.10 neeeds -- before -j.  cmake 3.16 understands -j
@@ -114,12 +124,18 @@ cmake --build . -- -j "${NCPU}"
 
 case "${OS}" in
     # Darwin is a special case.  The version is not embedded in the path.
-    Darwin) TRIPLE=darwin ;; # special case
-    *) TRIPLE=$("${BUILD_DIR}/bin/clang" -print-target-triple);;
+    Darwin)
+	TRIPLE=darwin
+	LIBNAME=libopencilk_osx.a
+	;;
+    *)
+	TRIPLE=$("${BUILD_DIR}/bin/clang" -print-target-triple)
+	LIBNAME=libopencilk.a
+	;;
 esac
 VERSION=$(sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt")
 
-LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/libopencilk.a"
+LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/${LIBNAME:?}"
 
 # Cheetah should have been built as part of LLVM
 if ! test -f "${LIBPATH}" ; then
