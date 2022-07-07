@@ -1,13 +1,13 @@
 ## Welcome to OpenCilk!
 
-This repo contains infrastructure tools for building the OpenCilk 1.1
+This repo contains infrastructure tools for building the OpenCilk 2.0
 compiler, runtime, and productivity tools.  Specifically, it includes
 scripts for building OpenCilk from source or downloading and
 installing a pre-built docker image of OpenCilk.
 
 ### Supported systems
 
-OpenCilk 1.1 has been tested on the following processor architectures:
+OpenCilk 2.0 has been tested on the following processor architectures:
 
 - Intel x86 processors, Haswell and newer
 - AMD x86 processors, Excavator and newer
@@ -19,7 +19,7 @@ The present version has been tested on the following operating systems:
   - including via the Windows Subsystem for Linux v2 (WSL2) on Windows 10
 - FreeBSD 13
 - Fedora 34
-- Mac OS X 10.15 and 11.6
+- Mac OS X 10.15, 11.6, and 12.4
 
 ### Summary of OpenCilk features
 
@@ -29,17 +29,19 @@ The present version has been tested on the following operating systems:
   lexical scope are guaranteed to be synced upon exiting that lexical
   scope.  Like the other Cilk keywords, `cilk_scope` is available by
   using the `-fopencilk` compiler flag and including `<cilk/cilk.h>`.
-- The compiler is based on [LLVM 12][llvm-12-doc] and supports the usual
-  [`clang`][clang-12-doc] options.
-- Both C and C++ are supported, including all standards supported by LLVM 12.
+- The compiler is based on [LLVM 14][llvm-14-doc] and supports the usual
+  [`clang`][clang-14-doc] options.
+- Both C and C++ are supported, including all standards supported by LLVM 14.
 - Prototype support for C++ exceptions is included.
-- Experimental support for pedigrees and built-in deterministic parallel 
-  random-number generation is available.  To enable pedigree support, compile and
-  link all Cilk code with the flag `-fopencilk-enable-pedigrees`.
-- Reducer hyperobjects are supported using the Intel Cilk Plus reducer library
-  — i.e., the hyperobject headers from Intel Cilk Plus — except that it is
-  not valid to reference the view of a C reducer after calling
-  `CILK_C_UNREGISTER_REDUCER`.
+- Experimental support for pedigrees and built-in deterministic
+  parallel random-number generation is available.  To enable pedigree
+  support, link the Cilk program with the pedigree library,
+  `-lopencilk-pedigrees`.
+- [Beta] OpenCilk 2.0 introduces language support for reducer
+  hyperobjects.  A local or global variable can be made into a reducer
+  by adding `cilk_reducer(I, R)` or `cilk_reducer(I, R, D)` to its
+  type, where `I`, `R`, and `D` designate the identity, reduce, and
+  optional destroy functions for the reducer.
 - Cilksan instrumentation for determinacy-race detection is enabled by using the
   `-fsanitize=cilk` compiler flag.  Cilksan supports reducers and Pthread mutex
   locks.  In addition, Cilksan offers an API for controlling race detection, which
@@ -49,20 +51,32 @@ The present version has been tested on the following operating systems:
   analyzing user-specified code regions, which is made available by including
   `<cilk/cilkscale.h>`, and includes facilities for benchmarking an application
   on different numbers of parallel cores and visualizing the results.
+- [Beta] Cilksan integrates with a [custom
+  version](https://github.com/OpenCilk/rr) of the RR reverse debugger
+  to enable interactive debugging of determinacy races.
 
-OpenCilk 1.1 is largely compatible with Intel's latest release of Cilk
+OpenCilk 2.0 is largely compatible with Intel's latest release of Cilk
 Plus.  Unsupported features include:
 
+- The Intel Cilk Plus reducer library.
 - Cilk Plus array-slice notation.
 - Certain Cilk Plus API functions, such as `__cilkrts_set_param()`.
 
 ### How to get OpenCilk
+
+**TODO:** Update this section once precompiled binaries and Docker
+image for OpenCilk 2.0 are ready.
 
 Precompiled binaries for OpenCilk 1.1 are available for some systems
 here:
 https://github.com/OpenCilk/opencilk-project/releases/tag/opencilk%2Fv1.1.
 To install, either download and run the appropriate shell archive
 (i.e., `.sh` file) or unpack the appropriate tarball.
+
+These precompiled binaries require that standard system header files
+and libraries are already installed.  These header files and libraries
+can be obtained by installing a modern version of GCC (including
+`g++`) on Linux or by installing a modern version of Xcode on macOS.
 
 A docker image for Ubuntu 20.04 with OpenCilk 1.1 installed is
 available here:
@@ -81,31 +95,28 @@ have been updated, make the following changes to your build process:
 - When compiling the program, replace any uses of `-fcilkplus` with `-fopencilk`.
 - When linking the program, replace any uses of `-lcilkrts` with `-fopencilk`.
 
-[llvm-12-doc]:  https://releases.llvm.org/12.0.0/docs/index.html
-[clang-12-doc]: https://releases.llvm.org/12.0.0/tools/clang/docs/index.html
+[llvm-14-doc]:  https://releases.llvm.org/14.0.0/docs/index.html
+[clang-14-doc]: https://releases.llvm.org/14.0.0/tools/clang/docs/index.html
 
-### Major changes in Version 1.1
+### Major changes in Version 2.0
 
-- [New] OpenCilk now supports the `cilk_scope` keyword for specifying
-  a lexical scope in which all spawns are guaranteed to be synced upon
-  exiting that scope.
-- [Beta] Cilksan now integrates with a [custom
-  version](https://github.com/OpenCilk/rr) of the RR reverse debugger
-  to enable interactive debugging of determinacy races.
-- AddressSanitizer can now check OpenCilk programs for memory errors.
-- The OpenCilk compiler has been upgraded to be based on LLVM 12.
-- Cilkscale now links correctly when building shared libraries with
-  the `-fcilktool=cilkscale` flag.
-- OCaml bindings to Tapir in the compiler have been updated, thanks to
-  [@Willtor](https://github.com/Willtor).
-- Version 1.1 includes many bug fixes and performance improvements
-  over version 1.0, including performance improvements to the runtime.
+- [Beta] OpenCilk supports a new syntax and implementation of reducer
+  hyperobjects.  This new implementation allows local and global
+  variables in C and C++ to be declared to be a `cilk_reducer` type.
+  Registration and deregistration of such reducer variables is
+  automatic.
+- Support for the Intel Cilk Plus reducer library has been removed.
+- The OpenCilk compiler has been upgraded to be based on LLVM 14.
+- Pedigrees are now correctly updated at both spawns and syncs.
+- Pedigrees are now enabled simply by linking the pedigree library,
+  `-lopencilk-pedigrees`, to the Cilk program.
+- Version 2.0 includes numerous bug fixes and performance improvements
+  over the previous version.
 
 ### Known issues
 
 - We are preparing more complete documentation for OpenCilk, including the 
 Cilkscale and Cilksan APIs.  Stay tuned!
-- The OpenCilk runtime system limits the number of active reducers to 1024.
 - Similarly to C/C++ programs, large stack allocations can cause memory
 errores due to overflowing OpenCilk's cactus stack.
 - There are some functions library and LLVM intrinsic functions that Cilksan
