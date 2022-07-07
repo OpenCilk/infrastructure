@@ -1,10 +1,9 @@
 ## Instructions for building OpenCilk from source
 
 OpenCilk is available as source code in three Git repositories, plus
-this infrastructure facilities repository.  OpenCilk 1.1 is only
+this infrastructure facilities repository.  OpenCilk 2.0 is only
 guaranteed to support 64-bit x86 on Linux and other Unix-like
-operating systems, although prototype support for 64-bit ARM is
-included.
+operating systems, although beta support for 64-bit ARM is included.
 
 ### Requirements
 
@@ -26,7 +25,7 @@ More details on build requirements for LLVM can be found here:
 
 Clone the OpenCilk infrastructure repository:
 
-    git clone -b opencilk/v1.1 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/infrastructure
 
 Run the following script to get the OpenCilk source code:
 
@@ -36,18 +35,19 @@ Then run the following script to build OpenCilk:
 
     infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
 
-You should now be ready to use OpenCilk.  Skip to [Usage](INSTALLING.md#Usage) now, or read
-on for more explicit directions on building OpenCilk from source.
+You should now be ready to use OpenCilk.  Skip to
+[Usage](INSTALLING.md#Usage) now, or read on for more explicit
+directions on building OpenCilk from source.
 
 ### Obtaining the OpenCilk source code
 
-Clone the OpenCilk compiler, runtime, and productivity tool repositories.  The
-Cheetah runtime and OpenCilk tool repositories must be cloned into
-sub-directories of the OpenCilk project directory:
+Clone the OpenCilk compiler, runtime, and productivity tool
+repositories.  The Cheetah runtime and OpenCilk tool repositories must
+be cloned into sub-directories of the OpenCilk project directory:
 
-    git clone -b opencilk/v1.1 https://github.com/OpenCilk/opencilk-project
-    git clone -b opencilk/v1.1 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
-    git clone -b opencilk/v1.1 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
+    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/opencilk-project
+    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
+    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
 
 Note that, because these commands clone specific tags of the OpenCilk
 repositories, it is normal for Git to report that each clone is in a
@@ -56,16 +56,17 @@ repositories, it is normal for Git to report that each clone is in a
 Clone the OpenCilk infrastructure repository, which contains the OpenCilk build
 script:
 
-    git clone -b opencilk/v1.1 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/infrastructure
 
 ### Building OpenCilk
 
-Run the `infrastructure/tools/build` script with two or three arguments.  The
-1st argument is the absolute pathname to the `opencilk-project` repository
-directory.  The 2nd argument is the absolute pathname of a directory to build
-OpenCilk.  The 3rd argument, if present, tells the build system how many
-parallel jobs to run.  Default parallelism is equal to the number of logical
-cores, or 10 if the number of cores is not detected.
+Run the `infrastructure/tools/build` script with two or three
+arguments.  The 1st argument is the absolute pathname to the
+`opencilk-project` repository directory.  The 2nd argument is the
+absolute pathname of a directory to build OpenCilk.  The 3rd argument,
+if present, tells the build system how many parallel jobs to run.
+Default parallelism is equal to the number of logical cores, or 10 if
+the number of cores is not detected.
 
 For example:
 
