@@ -25,7 +25,7 @@ More details on build requirements for LLVM can be found here:
 
 Clone the OpenCilk infrastructure repository:
 
-    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v2.0-rc2 https://github.com/OpenCilk/infrastructure
 
 Run the following script to get the OpenCilk source code:
 
@@ -45,9 +45,9 @@ Clone the OpenCilk compiler, runtime, and productivity tool
 repositories.  The Cheetah runtime and OpenCilk tool repositories must
 be cloned into sub-directories of the OpenCilk project directory:
 
-    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/opencilk-project
-    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
-    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
+    git clone -b opencilk/v2.0-rc2 https://github.com/OpenCilk/opencilk-project
+    git clone -b opencilk/v2.0-rc2 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
+    git clone -b opencilk/v2.0-rc2 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
 
 Note that, because these commands clone specific tags of the OpenCilk
 repositories, it is normal for Git to report that each clone is in a
@@ -56,7 +56,7 @@ repositories, it is normal for Git to report that each clone is in a
 Clone the OpenCilk infrastructure repository, which contains the OpenCilk build
 script:
 
-    git clone -b opencilk/v2.0-rc1 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v2.0-rc2 https://github.com/OpenCilk/infrastructure
 
 ### Building OpenCilk
 
