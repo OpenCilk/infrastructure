@@ -4,13 +4,13 @@ This document is meant for anyone modifying the OpenCilk codebase,
 that is, the code in the opencilk-project, cheetah, or
 productivity-tools repos.  If you are trying to debug a problem with
 the OpenCilk system, or if you are conducting research that involves
-modifying these codebases, these notes may be helpful to you.
+modifying these codebases, you may find these notes helpful.
 
 # Working with LLVM and the OpenCilk compiler
 
 Because the OpenCilk compiler is based on LLVM, the techniques for
 working with LLVM can be used to on the OpenCilk compiler as well.
-These notes describe some of those techniques that have proven useful
+These notes describe some of the techniques that have proven useful
 for working with LLVM IR in debugging the OpenCilk compiler.
 
 These notes assume that the reader has some basic familiarity with
@@ -73,7 +73,7 @@ For example, if `foo.c` is a Cilk program, then the command
 	clang -c foo.c -fopencilk -O1 -S -emit-llvm -o foo.ll
 
 will emit the LLVM IR after all Tapir instructions lowered to calls to
-the OpenCilk runtime system.  In contrast the command
+the OpenCilk runtime system.  In contrast, the command
 
 	clang -c foo.c -fopencilk -O1 -S -emit-llvm -o foo.ll -ftapir=none
 
@@ -86,37 +86,40 @@ Many editors support LLVM IR modes that make reading LLVM IR easier.
 LLVM IR modes for some editors are also available in the
 opencilk-project repo, under `llvm/utils`.
 
-## How to run a particular LLVM pass: `opt`
+## How to run specific LLVM passes: `opt`
 
 The `opt` tool allows you to run LLVM analysis and optimization passes
 directly on a given LLVM IR file.  For example, the following command
 runs the Scalar Replacement of Aggregates (SROA) optimization pass on
 the LLVM IR file `foo.ll` and emit the output into `foo_sroa.ll`:
 
-	opt foo.ll -sroa -S -o foo_sroa.ll
+	opt foo.ll -passes='sroa' -S -o foo_sroa.ll
 
-In the above command, the `-sroa` flag specifies the SROA optimization
-pass; the `-S` flag directs `opt` to emit human-readable LLVM IR, and
-`-o foo_sroa.ll` directs `opt` to emit the output to the file
-`foo_sroa.ll`.
+In the above command, the `-passes='sroa'` flag specifies the SROA
+optimization pass; the `-S` flag directs `opt` to emit human-readable
+LLVM IR, and `-o foo_sroa.ll` directs `opt` to emit the output to the
+file `foo_sroa.ll`.
 
-You can specify multiple passes for `opt` to run in order by simply
-passing the flags for those optimization passes in order.  For
-example, the following command runs the `indvars` and `licm` passes in
-order on `foo.ll`:
+You can specify multiple passes for `opt` to run in order by
+describing a custom pass pipeline.  For example, the following command
+runs on `foo.ll` a pass pipeline consisting of the `sroa` and
+`indvars` function passes followed by the `licm` loop pass with
+MemorySSA enabled:
 
-	opt foo.ll -indvars -licm -S -o foo_opt.ll
+	opt foo.ll -passes='sroa,indvars,loop-mssa(licm)' -S -o foo_opt.ll
 
-To run only an analysis pass, pass the `-analyze` flag to `opt` in
-addition to the flag for the particular analysis pass to run.  For
-example, the following command runs Scalar Evolution Analysis on
-`foo.ll`:
+To run only an analysis pass, pass the `-print<analysis_pass_name>`
+flag to `opt`.  For example, the following command runs Scalar
+Evolution Analysis on `foo.ll`:
 
-	opt foo.ll -analyze -scalar-evolution
+	opt foo.ll -passes='print<scalar-evolution>'
 
-The `opt` tool also recognizes similar optimization levels to `clang`,
-including `-O1`, `-O2`, and `-O3`.  Run `opt -help` or `opt
--help-hidden` for more information on the flags that `opt` recognizes.
+You can also run the default pipelines associated with standard
+optimization levels --- `-O1`, `-O2`, or `-O3` --- using `opt` by
+passing `-passes='default<O1>'`, `-passes='default<O2>'`, or
+`-passes='default<O3>'`, respectively, to `opt`.  Run `opt -help` or
+`opt -help-hidden` for more information on the flags that `opt`
+recognizes.
 
 ## How to emit unoptimized LLVM IR that is ready for optimization: `-Xclang -disable-llvm-passes`
 
@@ -172,62 +175,70 @@ graphs `opt` can produce.
 
 # Debugging the OpenCilk compiler
 
-These notes describe tools and techniques that are typically useful
-for debugging the OpenCilk compiler.
+These notes describe tools and techniques that we have found to be
+useful for debugging the OpenCilk compiler.
 
 For more information on debugging LLVM, see [LLVM's documentation on
 submitting bug reports](https://llvm.org/docs/HowToSubmitABug.html).
 
-## Reducing the pass pipeline for a compiler bug using `reduce_pipeline.py`
+## Reduce the pass pipeline for a compiler bug using `reduce_pipeline.py`
 
-LLVM 14 comes with a Python script, `reduce_pipeline.py`, for reducing the
-compiler pass pipeline for triggering a compiler bug.  The script is
-available in the source tree at `llvm/utils/reduce_pipeline.py`.
+LLVM 14 comes with a Python script, `reduce_pipeline.py`, for reducing
+the compiler pass pipeline for triggering a compiler bug.  The script
+is available in the source tree at `llvm/utils/reduce_pipeline.py`.
 
-Here's an example of how to use `reduce_pipeline.py`.  Suppose that the
-compiler crashes on some input `foo.ll` when using `-O3` optimizations.
-The following command uses `reduce_pipeline.py` to reduce the passes from
-those run at `-O3` to a smaller set that also triggers a crash:
+Here's an example of how to use `reduce_pipeline.py`.  Suppose that
+the compiler crashes on some input `foo.ll` when using `-O3`
+optimizations.  The following command uses `reduce_pipeline.py` to
+reduce the passes from those run at `-O3` to a smaller set that also
+triggers a crash:
 
 	/path/to/llvm/utils/reduce_pipeline.py --opt-binary /path/to/build/bin/opt --passes "default<O3>" --input foo.ll --output foo_passes.ll
 
 The arguments to this command are as follows:
-- The `--opt-binary` argument specifies the path to a custom version of `opt`
- on which the crash occurs.  Although this argument is technically optional, it
- is generally needed when working with a custom build of LLVM or OpenCilk.
-- The `--passes` argument is a string that specifies the initial set of passes to
- run, using the pass-pipeline syntax used by LLVM's new pass manager.  This string
- matches the passed to `opt -passes="<string>"`.  In this example, `"default<O3>"`
- is interpreted to be the set of passes run by default  with `-O3` optimization
+- The `--opt-binary` argument specifies the path to a custom version
+ of `opt` on which the crash occurs.  Although this argument is
+ technically optional, it is generally needed when working with a
+ custom build of LLVM or OpenCilk.
+- The `--passes` argument is a string that specifies the initial set
+ of passes to run, using the pass-pipeline syntax used by LLVM's new
+ pass manager.  This string matches the passed to `opt
+ -passes="<string>"`.  In this example, `"default<O3>"` is interpreted
+ to be the set of passes run by default with `-O3` optimization
  enabled.
-- The `--input` argument specifies the name of the LLVM IR input that triggers the
- crash.
-- The `--output` argument specifies the name of the file where `reduce_pipeline.py`
- will save the LLVM IR to pass to the reduced set of passes to trigger a compiler
- crash.  This argument, although optional, is often useful, especially when
- the initial set of passes is large, e.g., `default<O3>`.  When the initial set of
- passes is large, the LLVM IR needed to trigger the crash on the reduced pass pipeline
- often won't match that needed to trigger the crash on the original pipeline.
+- The `--input` argument specifies the name of the LLVM IR input that
+ triggers the crash.
+- The `--output` argument specifies the name of the file where
+ `reduce_pipeline.py` will save the LLVM IR to pass to the reduced set
+ of passes to trigger a compiler crash.  This argument, although
+ optional, is often useful, especially when the initial set of passes
+ is large, e.g., `default<O3>`.  When the initial set of passes is
+ large, the LLVM IR needed to trigger the crash on the reduced pass
+ pipeline often won't match that needed to trigger the crash on the
+ original pipeline.
 
-The set of passes and the output LLVM IR generated by this script are generally good
-candidates for further reducing the compiler bug using `llvm-reduce`, described next.
+The set of passes and the output LLVM IR generated by this script are
+generally good candidates for further reducing the compiler bug using
+`llvm-reduce`, described next.
 
 ## Reducing the input to a compiler bug using `llvm-reduce`
 
 The `llvm-reduce` tool can also be used to reduce LLVM IR input that
-leads to a crash, similarly to `bugpoint`.  The `llvm-reduce` tool
-operates differently from `bugpoint`, which has pros and cons for
-diagnosing compiler bugs.
+leads to a crash.  The `llvm-reduce` tool takes an ***interestingness
+test script*** that it uses to check if a given LLVM IR input contains
+a problem.  This test script provides significant flexibility in how
+it identifies interesting inputs.  A common case is that the script
+will run a specific set of LLVM passes on the input via `opt` to
+trigger a miscompilation.  But the script can alternatively run other
+tools or executables to check whether the input is interesting.
 
-In contrast to `bugpoint`, the `llvm-reduce` tool takes an
-interestingness test script to be run to check if a given LLVM IR
-input contains a problem.  As a result, it can be easier to use
-`llvm-reduce` than `bugpoint` to identify miscompilations other than
-compiler crashes, or to specify unusual pass options that are
-necessary to reproduce the issue.  On the other hand, `llvm-reduce`
-will not automatically minimize the set of analysis and
-code-transformation passes to run to reproduce the issue.  To reduce
-this set of passes, use the `reduce_pipeline.py` script.
+The `llvm-reduce` tool only modifies the LLVM IR input, in an effort
+to find a minimal LLVM IR input that exhibits interesting behavior.
+The tool does *not* modify the test script.  For example, in the
+common case where `llvm-reduce` is used to check whether a set of
+passes triggers a miscompilation, `llvm-reduce` will not minimize the
+set of passes run that trigger that miscompilation.  To reduce the set
+of passes, use the `reduce_pipeline.py` script.
 
 To use `llvm-reduce`, first create the interestingness test script to
 check a given LLVM IR input.  For example, let's assume that script is
@@ -261,11 +272,25 @@ passes `-simplifycfg`, with the option `-keep-loops=false`, and
 The following lines check if `opt` produced an error and returns the
 appropriate interestingness result accordingly.
 
-Here are some more example `reduce-scripts` that have been used to
-debug miscompilations by the OpenCilk compiler.
+Here are some tips for writing your own interestingness test scripts
+for `llvm-reduce`:
+- Test the command you wish to run on the command line, and examine
+ the return code using `echo $?`.
+- Verify that the script runs as intended by invoking it directly from
+ the command line, e.g., by running `./reduce-script <input>`.
 
-This `reduce-script` uses the new pass manager to invoke the
-`simplifycfg` pass with a particular set of flags:
+### Example interestingness test scripts for `llvm-reduce`
+
+Here are some more example scripts that have been used to debug
+miscompilations by the OpenCilk compiler on different systems.  We
+provide these here to illustrate some of the flexibility in writing
+such scripts and to provide convenient examples that can be copied and
+modified.
+
+This script uses LLVM's new pass manager (which is enabled by default
+as of LLVM 13) to invoke the `simplifycfg` pass with a particular set
+of flags:
+
 ```sh
 #!/bin/bash
 
@@ -278,8 +303,9 @@ else
 fi
 ```
 
-This `reduce-script` uses the new pass manager to invoke the
+This script uses the new pass manager to invoke the
 `simple-loop-unswitch` loop pass with MemorySSA enabled:
+
 ```sh
 #!/bin/bash
 
@@ -292,8 +318,9 @@ else
 fi
 ```
 
-This `reduce-script` runs the function-inlining pass and checks
-for a slightly different return code.
+This script runs the function-inlining pass and checks for a slightly
+different return code.
+
 ```sh
 #!/bin/bash
 
@@ -305,7 +332,7 @@ else
     exit 1
 fi
 ```
-This `reduce-script` runs `llc` and `FileCheck` to check for a
+This script runs `llc` and `FileCheck` to check for a
 problematic code pattern in the generated assembly.
 ```sh
 #!/bin/zsh
@@ -322,14 +349,35 @@ else
 fi
 ```
 
-Here are some tips for writing your own interestingness test scripts
-for `llvm-reduce`:
-- Test the command you wish to run on the command line, and examine
- the return code using `echo $?`.
-- Verify that the script runs as intended by invoking it directly from
- the command line, e.g., by running `./reduce-script <input>`.
+## How to see what passes are run: `-print-pipeline-passes` and `-debug-pass-manager`
+
+Suppose you want to see, when a given optimization level is specified,
+what passes will run and in what order.  There are a couple of flags
+you can choose from.
+
+You can use the flag `-print-pipeline-passes` to get a string
+describing the pass pipeline.  For example, the command
+
+	opt fib.ll -S -o fib_opt.ll -passes='default<O1>' -print-pipeline-passes
+
+produces a string describing the pass pipeline that runs when
+compiling code with optimization level `-O1`.  This string is
+compatible with the `-passes=` argument for `opt`.  In other words,
+you can pass this string to `opt -passes=<string>` to run the same set
+of passes.
+
+***Note:*** The `-print-pipeline-passes` flag is best-effort only.
+
+Alternatively, you can use the flag `-debug-pass-manager` to print
+debugging information from LLVM's pass manager.  This debugging
+information includes the code-transformation and analysis passes that
+are run in the order they are run.  Although this flag provides
+insight into what passes are running, the output of this flag is not a
+string compatible with the `-passes=` flag.
 
 ## [Deprecated] How to see what passes are run: `-debug-pass=`
+
+***Note:*** This flag is deprecated in the current version of LLVM.
 
 Suppose you want to see, when a given optimization level is specified,
 what passes will run and in what order.  You can use the flag
