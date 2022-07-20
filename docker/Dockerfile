@@ -22,6 +22,7 @@ RUN echo "Installing packages..." \
     lld \
     make \
     python3-minimal \
+    libpython3-stdlib \
     > /dev/null \
   && echo "Building OpenCilk..." \
   && tar -C /usr/local/src -xzf /usr/local/src/opencilk.tar.gz \
