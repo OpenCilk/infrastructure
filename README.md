@@ -19,19 +19,25 @@ The present version has been tested on the following operating systems:
   - including via the Windows Subsystem for Linux v2 (WSL2) on Windows 10
 - FreeBSD 13
 - Fedora 34
-- Mac OS X 10.15, 11.6, and 12.4
+- macOS 10.15, 11.6, and 12.4
 
 ### Summary of OpenCilk features
 
-- The `cilk_spawn`, `cilk_sync`, and `cilk_for` keywords are enabled by using
-  the `-fopencilk` compiler flag and including `<cilk/cilk.h>`.
+- The `cilk_spawn`, `cilk_sync`, and `cilk_for` keywords are enabled
+  by using the `-fopencilk` compiler flag and including
+  `<cilk/cilk.h>`.
 - The `cilk_scope` keyword specifies that all spawns within a given
   lexical scope are guaranteed to be synced upon exiting that lexical
-  scope.  Like the other Cilk keywords, `cilk_scope` is available by
-  using the `-fopencilk` compiler flag and including `<cilk/cilk.h>`.
-- The compiler is based on [LLVM 14][llvm-14-doc] and supports the usual
-  [`clang`][clang-14-doc] options.
-- Both C and C++ are supported, including all standards supported by LLVM 14.
+  scope.  The `cilk_scope` keyword can also be used as a hint that the
+  runtime system should ensure that Cilk workers are initialized, in
+  order to quiesce performance measurements.  Like the other Cilk
+  keywords, `cilk_scope` is available by using the `-fopencilk`
+  compiler flag and including `<cilk/cilk.h>`.
+- The compiler is based on [LLVM 14][llvm-14-doc] and supports the
+  usual [`clang`][clang-14-doc] options as well as advanced linking
+  features, such as link-time optimization (LTO).
+- Both C and C++ are supported, including all standards supported by
+  LLVM 14.
 - Prototype support for C++ exceptions is included.
 - Experimental support for pedigrees and built-in deterministic
   parallel random-number generation is available.  To enable pedigree
@@ -39,18 +45,19 @@ The present version has been tested on the following operating systems:
   `-lopencilk-pedigrees`.
 - [Beta] OpenCilk 2.0 introduces language support for reducer
   hyperobjects.  A local or global variable can be made into a reducer
-  by adding `cilk_reducer(I, R)` or `cilk_reducer(I, R, D)` to its
-  type, where `I`, `R`, and `D` designate the identity, reduce, and
-  optional destroy functions for the reducer.
-- Cilksan instrumentation for determinacy-race detection is enabled by using the
-  `-fsanitize=cilk` compiler flag.  Cilksan supports reducers and Pthread mutex
-  locks.  In addition, Cilksan offers an API for controlling race detection, which
-  is available by including `<cilk/cilksan.h>`.
-- Cilkscale instrumentation for scalability analysis and profiling is enabled by
-  using the `-fcilktool=cilkscale` compiler flag.  Cilkscale offers an API for
-  analyzing user-specified code regions, which is made available by including
-  `<cilk/cilkscale.h>`, and includes facilities for benchmarking an application
-  on different numbers of parallel cores and visualizing the results.
+  by adding `cilk_reducer(I, R)` to its type, where `I` and `R`
+  designate the identity and reduce functions for the reducer.
+- Cilksan instrumentation for determinacy-race detection is enabled by
+  using the `-fsanitize=cilk` compiler flag.  Cilksan supports
+  reducers and Pthread mutex locks.  In addition, Cilksan offers an
+  API for controlling race detection, which is available by including
+  `<cilk/cilksan.h>`.
+- Cilkscale instrumentation for scalability analysis and profiling is
+  enabled by using the `-fcilktool=cilkscale` compiler flag.
+  Cilkscale offers an API for analyzing user-specified code regions,
+  which is made available by including `<cilk/cilkscale.h>`, and
+  includes facilities for benchmarking an application on different
+  numbers of parallel cores and visualizing the results.
 - [Beta] Cilksan integrates with a [custom
   version](https://github.com/OpenCilk/rr) of the RR reverse debugger
   to enable interactive debugging of determinacy races.
@@ -64,39 +71,62 @@ Plus.  Unsupported features include:
 
 ### How to get OpenCilk
 
-**TODO:** Update this section once precompiled binaries and Docker
-image for OpenCilk 2.0 are ready.
-
-Precompiled binaries for OpenCilk 1.1 are available for some systems
+Precompiled binaries for OpenCilk 2.0 are available for some systems
 here:
-https://github.com/OpenCilk/opencilk-project/releases/tag/opencilk%2Fv1.1.
+https://github.com/OpenCilk/opencilk-project/releases/tag/opencilk%2Fv2.0.
 To install, either download and run the appropriate shell archive
-(i.e., `.sh` file) or unpack the appropriate tarball.
+(i.e., the `.sh` file) or unpack the appropriate tarball.
 
 These precompiled binaries require that standard system header files
 and libraries are already installed.  These header files and libraries
 can be obtained by installing a modern version of GCC (including
 `g++`) on Linux or by installing a modern version of Xcode on macOS.
 
-A docker image for Ubuntu 20.04 with OpenCilk 1.1 installed is
+A docker image with OpenCilk 2.0 installed, based on Ubuntu 20.04, is
 available here:
-https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv1.1/docker-opencilk-v1.1.tar.gz.
+https://github.com/OpenCilk/opencilk-project/releases/download/opencilk%2Fv2.0/docker-opencilk-v2.0.tar.gz.
 Some documentation on how to use the docker image can be found here:
 [docker](docker).
 
-For other systems, instructions for downloading and building OpenCilk
-from source can be found here: [INSTALLING.md](INSTALLING.md).
+For other systems, we recommend instructions for downloading and
+building OpenCilk from source can be found here:
+[INSTALLING.md](INSTALLING.md).
 
 ### Porting Cilk Plus code to OpenCilk
+
+***Reducers:*** OpenCilk 2.0 no longer support the Intel Cilk Plus
+reducer library and instead features a new syntax and implementation
+for reducers as a beta feature.  The new reducer implementation allows
+one to change a local or global variable into a reducer by adding
+`cilk_reducer(I,R)` to the variable's type, where `I` and `R`
+designate the identity and reduce functions for the reducer.  For
+example, here is how a simple integer-summation reducer can be
+implemented using the new reducer syntax:
+
+```c
+#include <cilk/cilk.h>
+
+void zero(void *v) {
+  *(int *)v = 0;
+}
+
+void plus(void *l, void *r) {
+  *(int *)l += *(int *)r;
+}
+
+int foo(int *A, int n) {
+  int cilk_reducer(zero, plus) sum = 0;
+  cilk_for (int i = 0; i < n; ++i)
+    sum += A[i];
+  return sum;
+}
+```
 
 To port a Cilk Plus program to OpenCilk, once all uses of unsupported features 
 have been updated, make the following changes to your build process:
 
 - When compiling the program, replace any uses of `-fcilkplus` with `-fopencilk`.
 - When linking the program, replace any uses of `-lcilkrts` with `-fopencilk`.
-
-[llvm-14-doc]:  https://releases.llvm.org/14.0.0/docs/index.html
-[clang-14-doc]: https://releases.llvm.org/14.0.0/tools/clang/docs/index.html
 
 ### Major changes in Version 2.0
 
@@ -115,8 +145,8 @@ have been updated, make the following changes to your build process:
 
 ### Known issues
 
-- We are preparing more complete documentation for OpenCilk, including the 
-Cilkscale and Cilksan APIs.  Stay tuned!
+- We are preparing documentation for OpenCilk and posting it on the
+  OpenCilk website, https://www.opencilk.org.
 - Similarly to C/C++ programs, large stack allocations can cause memory
 errores due to overflowing OpenCilk's cactus stack.
 - There are some functions library and LLVM intrinsic functions that Cilksan
@@ -125,9 +155,14 @@ produce a link-time error of the form, `undefined reference to '__csan_FUNC'`
 for some function name `__csan_FUNC`.
   - Please report these missing functions to us as bug reports when you
 encounter them.
-  - While we prepare a fix for the issue, you can work around the issue
-by adding the following code to your program, replacing `__csan_FUNC` with
-the name of the function in the error message:
+  - [Beta] To work around the issue, add the flag ``-mllvm
+    -cilksan-bc-path=`find /path/to/opencilk/ -name "libcilksan.bc"`
+    `` to your command to compile the Cilk program.
+  - If the above work around does not work for you, please let us
+know.  Meanwhile, you can work around the issue by adding the
+following code to your program, replacing `__csan_FUNC` with the name
+of the function in the error message:
+
 ```cpp
 #ifdef __cilksan__
 #ifdef __cplusplus
@@ -161,14 +196,13 @@ void __csan_FUNC(uint64_t call_id, uint64_t func_id, unsigned count) {
   <https://github.com/OpenCilk/applications>
 
 - OpenCilk website:  
-  <http://opencilk.org>
+  <https://www.opencilk.org>
 
 ### Contact
 
-Bug reports should be posted to the 
-[GitHub issue tracker](https://github.com/OpenCilk/opencilk-project/issues)
-or emailed to [bugs@opencilk.org](mailto:bugs@opencilk.org).
-Other queries and comments should be emailed to
+Bug reports should be posted to the [GitHub issue
+tracker](https://github.com/OpenCilk/opencilk-project/issues).  Other
+queries and comments should be emailed to
 [contact@opencilk.org](mailto:contact@opencilk.org).
 
 ### OpenCilk development team
@@ -200,3 +234,6 @@ expressed or implied, of the United states Air Force, the
 U.S. Government, or the National Science Foundation.  The
 U.S. Government is authorized to reproduce and distribute reprints for
 Government purposes notwithstanding any copyright notation herein.
+
+[llvm-14-doc]:  https://releases.llvm.org/14.0.0/docs/index.html
+[clang-14-doc]: https://releases.llvm.org/14.0.0/tools/clang/docs/index.html
