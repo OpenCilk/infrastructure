@@ -23,21 +23,26 @@ More details on build requirements for LLVM can be found here:
 
 ### Quick start
 
-Typically, the following three steps should suffice to build OpenCilk
-from source on a compatible system with prerequisite software
-installed.
+Typically, the following three steps suffice to build OpenCilk from
+source on a compatible system with prerequisite software installed.
 
 1. Clone the OpenCilk infrastructure repository:
 
-    git clone -b opencilk/v2.0 https://github.com/OpenCilk/infrastructure
+```sh
+git clone -b opencilk/v2.0 https://github.com/OpenCilk/infrastructure
+```
 
 2. Run the following script to get the OpenCilk source code:
 
-    infrastructure/tools/get $(pwd)/opencilk
+```sh
+infrastructure/tools/get $(pwd)/opencilk
+```
 
 3. Then run the following script to build OpenCilk:
 
-    infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
+```sh
+infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
+```
 
 You should now be ready to use OpenCilk.  Skip to
 [Usage](INSTALLING.md#Usage) now, or read on for more explicit
