@@ -38,7 +38,7 @@ git clone -b opencilk/v2.0 https://github.com/OpenCilk/infrastructure
 infrastructure/tools/get $(pwd)/opencilk
 ```
 
-3. Then run the following script to build OpenCilk:
+3. Run the following script to build OpenCilk:
 
 ```sh
 infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
@@ -48,11 +48,12 @@ You should now be ready to use OpenCilk.  Skip to
 [Usage](INSTALLING.md#Usage) now, or read on for more explicit
 directions on building OpenCilk from source.
 
-### Obtaining the OpenCilk source code
+### Obtaining the OpenCilk source code (detailed instructions)
 
 Clone the OpenCilk compiler, runtime, and productivity tool
 repositories.  The Cheetah runtime and OpenCilk tool repositories must
-be cloned into sub-directories of the OpenCilk project directory:
+be cloned into specific subdirectories of the OpenCilk project
+directory:
 
     git clone -b opencilk/v2.0 https://github.com/OpenCilk/opencilk-project
     git clone -b opencilk/v2.0 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
@@ -62,12 +63,12 @@ Note that, because these commands clone specific tags of the OpenCilk
 repositories, it is normal for Git to report that each clone is in a
 'detached HEAD' state after cloning.
 
-Clone the OpenCilk infrastructure repository, which contains the OpenCilk build
-script:
+Clone the OpenCilk infrastructure repository, which contains the
+OpenCilk build script:
 
     git clone -b opencilk/v2.0 https://github.com/OpenCilk/infrastructure
 
-### Building OpenCilk
+### Building OpenCilk (detailed instructions)
 
 Run the `infrastructure/tools/build` script with two or three
 arguments.  The 1st argument is the absolute pathname to the
@@ -87,11 +88,12 @@ Alternatively, to explicitly build OpenCilk using 8 build threads:
     # ...git clone as above...
     infrastructure/tools/build $(pwd)/opencilk-project $(pwd)/build 8
 
-OpenCilk takes a few CPU-hours to build on a modern system --- less than 10
-minutes on a 24-core Ryzen with a fast disk.  It might take all day
-single-threaded on an older machine.
+OpenCilk takes a few CPU-hours to build on a modern system --- less
+than 10 minutes on a 24-core Ryzen with a fast disk.  It might take
+all day single-threaded on an older machine.
 
-To echo the OpenCilk build script call syntax, use the `--help` switch:
+To echo the OpenCilk build script call syntax, use the `--help`
+switch:
 
     infrastructure/tools/build --help
 
