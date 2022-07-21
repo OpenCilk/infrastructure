@@ -83,6 +83,7 @@ case "${OS}" in
         # an issue with recent versions of MacOSX and XCode trying to enable
         # ARM support (c.f., https://trac.macports.org/ticket/61555).
         TARGETS="host"
+        OPENCILK_INSTALL_PREFIX=/opt/opencilk-2
         ;;
     *BSD)
         # An older version required compiler-rt in OPENCILK_RUNTIMES
@@ -93,10 +94,12 @@ case "${OS}" in
         : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
         # Standard FreeBSD target list
         TARGETS="AArch64;ARM;Mips;PowerPC;RISCV;Sparc;X86"
+        OPENCILK_INSTALL_PREFIX=/opt/opencilk-2
         ;;
     *)
         : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
         TARGETS="AArch64;X86"
+        OPENCILK_INSTALL_PREFIX=/opt/opencilk-2
         ;;
 esac
 # TODO: Add support to optionally enable other popular features on
@@ -112,10 +115,10 @@ RUNTIMES="${OPENCILK_RUNTIMES}${COMPILER_RT_RUNTIMES}"
 
 cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
       -DLLVM_ENABLE_RUNTIMES="${RUNTIMES}" \
-      -DLLVM_TARGETS_TO_BUILD=host \
       -DLLVM_ENABLE_ASSERTIONS="${OPENCILK_ASSERTIONS:?}" \
       -DLLVM_TARGETS_TO_BUILD="${TARGETS:?}" \
       -DCMAKE_BUILD_TYPE="${OPENCILK_RELEASE:?}" \
+      -DCMAKE_INSTALL_PREFIX="${OPENCILK_INSTALL_PREFIX:?}" \
       -DLLVM_OPTIMIZED_TABLEGEN=On \
       "${OPENCILK_SOURCE}/llvm"
 # Alternatively, make -j "${NCPU}" using the native system make.
