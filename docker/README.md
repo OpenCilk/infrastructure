@@ -30,7 +30,10 @@ Linux, users should be added to the docker group so docker commands do
 not need root privileges to execute.  The image can then be loaded
 into docker by running:
 
-	docker load < docker-opencilk-v1.0.tar.gz
+	docker load < docker-opencilk-<version>.tar.gz
+
+where `<version>` is the string describing the version of OpenCilk,
+e.g., `v2.0`.
 
 The docker image is constructed from an Ubuntu 20.04 base image, and
 is built according to the procedures in the `Dockerfile` and
