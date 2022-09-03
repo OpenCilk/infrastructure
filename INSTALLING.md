@@ -29,7 +29,7 @@ source on a compatible system with prerequisite software installed.
 1. Clone the OpenCilk infrastructure repository:
 
 ```sh
-git clone -b opencilk/v2.0 https://github.com/OpenCilk/infrastructure
+git clone -b opencilk/v2.0.1 https://github.com/OpenCilk/infrastructure
 ```
 
 2. Run the following script to get the OpenCilk source code:
@@ -55,9 +55,9 @@ repositories.  The Cheetah runtime and OpenCilk tool repositories must
 be cloned into specific subdirectories of the OpenCilk project
 directory:
 
-    git clone -b opencilk/v2.0 https://github.com/OpenCilk/opencilk-project
-    git clone -b opencilk/v2.0 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
-    git clone -b opencilk/v2.0 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
+    git clone -b opencilk/v2.0.1 https://github.com/OpenCilk/opencilk-project
+    git clone -b opencilk/v2.0.1 https://github.com/OpenCilk/cheetah opencilk-project/cheetah
+    git clone -b opencilk/v2.0.1 https://github.com/OpenCilk/productivity-tools opencilk-project/cilktools
 
 Note that, because these commands clone specific tags of the OpenCilk
 repositories, it is normal for Git to report that each clone is in a
@@ -66,7 +66,7 @@ repositories, it is normal for Git to report that each clone is in a
 Clone the OpenCilk infrastructure repository, which contains the
 OpenCilk build script:
 
-    git clone -b opencilk/v2.0 https://github.com/OpenCilk/infrastructure
+    git clone -b opencilk/v2.0.1 https://github.com/OpenCilk/infrastructure
 
 ### Building OpenCilk (detailed instructions)
 
