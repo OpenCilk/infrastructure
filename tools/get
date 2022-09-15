@@ -4,6 +4,9 @@ usage() {
     printf "USAGE:\n"
     printf "%s source-dir\n" "$0"
     printf "\tClone the OpenCilk source into the directory source-dir.\n"
+    printf "\t\tSet the environment variable CLONE_DEPTH to\n"
+    printf "\t\tlimit how deeply git clones the source repos.\n"
+    printf "\t\tThis defaults to 1.  Set to 0 for the full history.\n"
     exit 1
 }
 
@@ -31,6 +34,14 @@ set -ex
 CHEETAH_SOURCE="${OPENCILK_SOURCE:?}/cheetah"
 CILKTOOLS_SOURCE="${OPENCILK_SOURCE:?}/cilktools"
 
+# Set the clone depth for the repos. This should be one for
+# non-developer usage and zero to clone the entire history.
+if [ -z "${CLONE_DEPTH}" ] ; then
+    DEPTH="--depth 1"
+elif [ "${CLONE_DEPTH}" -ne 0 ] ; then
+    DEPTH="--depth ${CLONE_DEPTH}"
+fi
+    
 # We shall clone the three OpenCilk source repositories using the same
 # tag as this infrastructure repository.
 cd "$(dirname "$0" )"
@@ -38,9 +49,9 @@ TAG="$(git describe --tags --abbrev=0)"
 cd -
 
 # Clone the three OpenCilk source repositories.
-git clone -b "${TAG}" https://github.com/OpenCilk/opencilk-project "${OPENCILK_SOURCE}"
-git clone -b "${TAG}" https://github.com/OpenCilk/cheetah "${CHEETAH_SOURCE}"
-git clone -b "${TAG}" https://github.com/OpenCilk/productivity-tools "${CILKTOOLS_SOURCE}"
+git clone -b "${TAG}" ${DEPTH} https://github.com/OpenCilk/opencilk-project "${OPENCILK_SOURCE}"
+git clone -b "${TAG}" ${DEPTH} https://github.com/OpenCilk/cheetah "${CHEETAH_SOURCE}"
+git clone -b "${TAG}" ${DEPTH} https://github.com/OpenCilk/productivity-tools "${CILKTOOLS_SOURCE}"
 
 # Report that the clone succeeded.
 printf "Clone completed successfully.  Any messages above about 'detached HEAD' states are expected behavior.\n"
