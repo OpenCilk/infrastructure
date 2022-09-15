@@ -32,6 +32,10 @@ source on a compatible system with prerequisite software installed.
 git clone -b opencilk/v2.0.1 https://github.com/OpenCilk/infrastructure
 ```
 
+Note: By default, this clones only to a depth of one.  Set the
+environment variable `CLONE_DEPTH` to the desired depth or
+zero to clone the entire history.
+
 2. Run the following script to get the OpenCilk source code:
 
 ```sh
