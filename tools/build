@@ -137,7 +137,7 @@ case "${OS}" in
 	LIBNAME=libopencilk.a
 	;;
 esac
-VERSION=$(sed -n '/set.PACKAGE_VERSION/s/^.* \([0-9.]*\))/\1/p' "${CHEETAH_SOURCE}/CMakeLists.txt")
+VERSION=$(sed -n '/set.LLVM_VERSION_MAJOR/s/^.* \([0-9.]*\))/\1/p' "${OPENCILK_SOURCE}/llvm/CMakeLists.txt")
 
 LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/${LIBNAME:?}"
 
