@@ -2,8 +2,11 @@
 
 usage() {
     printf "USAGE:\n"
-    printf "%s source-dir\n" "$0"
+    printf "%s [-t|--tag <tag>] source-dir\n" "$0"
     printf "\tClone the OpenCilk source into the directory source-dir.\n"
+    printf "\tOptions:\n"
+    printf "\t\t-t|--tag <tag>\tClone the specified tag of OpenCilk.\n"
+    printf "\tEnvironment variables:\n"
     printf "\t\tSet the environment variable CLONE_DEPTH to\n"
     printf "\t\tlimit how deeply git clones the source repos.\n"
     printf "\t\tThis defaults to 1.  Set to 0 for the full history.\n"
