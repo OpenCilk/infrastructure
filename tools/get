@@ -19,6 +19,11 @@ do
 	    OPENCILK_SOURCE="$1"
 	    shift;;
 	-h|-help|--help) usage;;
+	-t|--tag)
+	    TAG="$2"
+	    shift
+	    shift
+	    ;;
 	-*) echo "unknown option $1"; exit 1;;
 	*) echo "First argument ($1) must be absolute pathname"; exit 1;;
     esac
@@ -44,9 +49,13 @@ fi
     
 # We shall clone the three OpenCilk source repositories using the same
 # tag as this infrastructure repository.
-cd "$(dirname "$0" )"
-TAG="$(git describe --tags --abbrev=0)"
-cd -
+if [ -z "${TAG}" ]; then
+    cd "$(dirname "$0" )"
+    TAG="$(git describe --tags --abbrev=0)"
+    cd -
+fi
+
+printf "Cloning OpenCilk tag ${TAG} into ${OPENCILK_SOURCE}."
 
 # Clone the three OpenCilk source repositories.
 git clone -b "${TAG}" ${DEPTH} https://github.com/OpenCilk/opencilk-project "${OPENCILK_SOURCE}"
