@@ -130,7 +130,7 @@ have been updated, make the following changes to your build process:
 
 ### Major changes in Version 2.0
 
-- [Beta] OpenCilk supports a new syntax and implementation of reducer
+- [Beta feature] OpenCilk supports a new syntax and implementation of reducer
   hyperobjects.  This new implementation allows local and global
   variables in C and C++ to be declared to be a `cilk_reducer` type.
   Registration and deregistration of such reducer variables is
@@ -155,8 +155,8 @@ produce a link-time error of the form, `undefined reference to '__csan_FUNC'`
 for some function name `__csan_FUNC`.
   - Please report these missing functions to us as bug reports when you
 encounter them.
-  - [Beta] To work around the issue, add the flag ``-mllvm
-    -cilksan-bc-path=`find /path/to/opencilk/ -name "libcilksan.bc"`
+  - [Beta feature] To work around the issue, add the flag ``-mllvm
+    -cilksan-bc-path=`find /path/to/opencilk/ -name "libcilksan*.bc"`
     `` to your command to compile the Cilk program.
   - If the above work around does not work for you, please let us
 know.  Meanwhile, you can work around the issue by adding the
