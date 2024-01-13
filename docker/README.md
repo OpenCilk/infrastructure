@@ -1,44 +1,48 @@
-## Building a new docker image
+## Building a new Docker image
 
-To build a new docker image, first install docker on your system, if
+To build a new Docker image, first install Docker on your system, if
 it's not installed already.
 
 For Ubuntu, follow the instructions
 [here](https://docs.docker.com/engine/install/ubuntu/) to install
-docker.  To use docker without superuser privileges, first run this
-command:
+Docker, and follow the [Linux postinstall instructions]
+(https://docs.docker.com/engine/install/linux-postinstall/) to use
+Docker without superuser privileges.
 
-    sudo usermod -aG docker $USER
+Verify that you can run Docker without superuser privileges:
 
-Then either logout and login again or run the following command:
+```console
+docker run hello-world
+```
 
-    newgrp docker
+Once Docker is installed, run the build script in this directory to
+build the Docker image:
 
-Verify that you can run docker without superuser privileges:
+```console
+TAG=<tag> ./build-image.sh
+```
 
-    docker run hello-world
+where `<tag>` gives the Git tag of the OpenCilk version to use,
+e.g., `opencilk/v2.1`.
 
-Once docker is installed, run the build script in this directory to
-build the docker image:
+## Using the Docker image
 
-	./build-image.sh
-
-## Using the docker image
-
-To install the pre-build container image, first install docker.  On
-Linux, users should be added to the docker group so docker commands do
+To install the pre-build container image, first install Docker.  On
+Linux, users should be added to the Docker group so `docker` commands do
 not need root privileges to execute.  The image can then be loaded
-into docker by running:
+into Docker by running:
 
-	docker load < docker-opencilk-<version>.tar.gz
+```console
+docker load < docker-opencilk-<version>.tar.gz
+```
 
 where `<version>` is the string describing the version of OpenCilk,
-e.g., `v2.0`.
+e.g., `v2.1`.
 
-The docker image is constructed from an Ubuntu 20.04 base image, and
+The Docker image is constructed from an Ubuntu 20.04 base image, and
 is built according to the procedures in the `Dockerfile` and
 `build-image.sh` files.  This image is not intended to be standalone,
 and is intended to be used as a base for your own Docker images.  It
-contains all that is necessary to build and use OpenCilk's compiler
+contains all that is necessary to build and use OpenCilk's compiler,
 runtime, and tools, and additionally contains the OpenCilk source code
 in `/usr/local/src/opencilk.tar.gz`.

@@ -7,11 +7,12 @@ set -e
 
 # Download the source code
 
-echo "Downloading OpenCilk source..."
-
 # Derive the OpenCilk version from the latest Git tag, and determine
 # the image name and final tarball name from that tag.
-TAG="$(git describe --tags --abbrev=0)"
+if [ -z "$TAG" ]; then
+    TAG="$(git describe --tags --abbrev=0)"
+fi
+echo "Downloading OpenCilk source, tag ${TAG}..."
 IMAGE_NAME="$(echo "${TAG}" | sed 's/\//:/g')"
 DOCKER_NAME="$(echo "${TAG}" | sed 's/\//-/g')"
 
