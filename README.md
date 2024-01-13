@@ -10,7 +10,7 @@ OpenCilk has been tested on the following processor architectures:
 
 - Intel x86 processors, Haswell and newer
 - AMD x86 processors, Excavator and newer
-- Various 64-bit ARM processors, including the Apple M1 and M2
+- Various 64-bit ARM processors, including Apple M1 and M2
 
 The present version has been tested on the following operating systems:
 
@@ -125,22 +125,16 @@ have been updated, make the following changes to your build process:
 
 - OpenCilk website:
   <https://www.opencilk.org>
-
 - Instructions for building OpenCilk from source:
   <https://www.opencilk.org/doc/users-guide/build-opencilk-from-source/>
-
 - Scripts for building a Docker image with OpenCilk:
   [docker](docker)
-
 - Link to the OpenCilk infrastructure GitHub repo:
   <https://github.com/OpenCilk/infrastructure>
-
 - Some simple demo Cilk programs:
   <https://github.com/OpenCilk/tutorial>
-
 - Additional demo Cilk programs:
   <https://github.com/OpenCilk/applications>
-
 - Notes for developing on the OpenCilk source:
   [DEVELOPER_NOTES.md](DEVELOPER_NOTES.md)
 
@@ -160,6 +154,7 @@ queries and comments should be emailed to
 - Charles E. Leiserson, MIT — Executive Director
 - Tim Kaler, MIT, Research Scientist
 - Xuhao Chen, MIT, Research Scientist
+- Kyle Singer, MIT, Postdoc
 
 ### Previous team members
 
