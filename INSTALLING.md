@@ -30,29 +30,29 @@ source on a compatible system with prerequisite software installed.
 
 1. Clone the OpenCilk infrastructure repository:
 
-```console
-git clone https://github.com/OpenCilk/infrastructure
-```
-
-> [!NOTE]
-> By default, this clones only to a depth of one.  Set the
-> environment variable `CLONE_DEPTH` to the desired depth or
-> zero to clone the entire history.
+   ```console
+   git clone https://github.com/OpenCilk/infrastructure
+   ```
 
 2. Run the following script to get the OpenCilk source code:
 
-```console
-infrastructure/tools/get -t <tag> $(pwd)/opencilk
-```
+   ```console
+   infrastructure/tools/get -t <tag> $(pwd)/opencilk
+   ```
 
-where `<tag>` is the Git tag for the OpenCilk version to build, such
-as `opencilk/v2.1`.
+   where `<tag>` is the Git tag for the OpenCilk version to build, such
+   as `opencilk/v2.1`.
 
 3. Run the following script to build OpenCilk:
 
-```console
-infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
-```
+   ```console
+   infrastructure/tools/build $(pwd)/opencilk $(pwd)/build
+   ```
+
+> [!TIP]
+> By default, the `get` script clones the OpenCilk Git repositories only
+> to a depth of one.  Set the environment variable `CLONE_DEPTH` to the
+> desired depth or zero to clone the entire history.
 
 You should now be ready to use OpenCilk.  Skip to
 [Usage](INSTALLING.md#Usage) now, or read on for more explicit
@@ -123,6 +123,7 @@ diagnosing and fixing common problems, or contact us via the [OpenCilk
 issue tracker](https://github.com/OpenCilk/opencilk-project/issues) or
 by emailing us at [contact@opencilk.org](mailto:contact@opencilk.org).
 
+> [!TIP]
 > ***Advanced build options:*** If you wish, you can customize your
 > build of OpenCilk beyond what the script provides --- e.g., to build
 > additional LLVM subprojects --- by running the necessary CMake
