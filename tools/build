@@ -77,7 +77,7 @@ OPENCILK_RUNTIMES="cheetah;cilktools" # Required runtimes
 # Add compiler-rt project to enable support for Google sanitizers.
 case "${OS}" in
     Darwin)
-        : "${COMPILER_RT_COMPONENTS:=";compiler-rt;libcxx;libcxxabi"}"
+        : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
         # Note: We restrict the build to enable only architecture targets on
         # the host (via -DLLVM_TARGETS_TO_BUILD=host) in order to work around
         # an issue with recent versions of MacOSX and XCode trying to enable
