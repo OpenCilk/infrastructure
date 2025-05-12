@@ -23,20 +23,19 @@ The present version has been tested on the following operating systems:
 ## Summary of OpenCilk features
 
 - The `cilk_spawn`, `cilk_sync`, and `cilk_for` keywords are enabled
-  by using the `-fopencilk` compiler flag and including
-  `<cilk/cilk.h>`.
+  by using the `-fopencilk` compiler flag.
 - The `cilk_scope` keyword specifies that all spawns within a given
   lexical scope are guaranteed to be synced upon exiting that lexical
   scope.  The `cilk_scope` keyword can also be used as a hint that the
   runtime system should ensure that Cilk workers are initialized, in
   order to quiesce performance measurements.  Like the other Cilk
   keywords, `cilk_scope` is available by using the `-fopencilk`
-  compiler flag and including `<cilk/cilk.h>`.
+  compiler flag.
 - The compiler is based on [LLVM][llvm-doc] and supports the usual
   `clang` options as well as advanced linking features,
   such as link-time optimization (LTO).
 - Both C and C++ are supported, including all standards supported by
-  LLVM 16.
+  LLVM 19.
 - Support for deterministic parallel random-number generation is
   available.  To enable pedigree support, link the Cilk program with
   the pedigree library, `-lopencilk-pedigrees`.

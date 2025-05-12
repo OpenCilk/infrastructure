@@ -72,18 +72,19 @@ cd "${BUILD_DIR}"
 
 : "${OPENCILK_RELEASE:=Release}" # RelWithDebInfo to debug the compiler
 : "${OPENCILK_ASSERTIONS:=On}"   # Off to disable assertions in the compiler
-OPENCILK_COMPONENTS="clang"      # Required components; edit to add extra LLVM projects
+OPENCILK_COMPONENTS="clang;clang-tools-extra"      # Required components; edit to add extra LLVM projects
 OPENCILK_RUNTIMES="cheetah;cilktools" # Required runtimes
 # Add compiler-rt project to enable support for Google sanitizers.
 case "${OS}" in
     Darwin)
-        : "${COMPILER_RT_COMPONENTS:=";compiler-rt;libcxx;libcxxabi"}"
+        : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
+        export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
         # Note: We restrict the build to enable only architecture targets on
         # the host (via -DLLVM_TARGETS_TO_BUILD=host) in order to work around
         # an issue with recent versions of MacOSX and XCode trying to enable
         # ARM support (c.f., https://trac.macports.org/ticket/61555).
         TARGETS="host"
-        OPENCILK_INSTALL_PREFIX=/opt/opencilk-2
+        OPENCILK_INSTALL_PREFIX=/opt/opencilk-3
         ;;
     *BSD)
         # An older version required compiler-rt in OPENCILK_RUNTIMES
@@ -94,12 +95,12 @@ case "${OS}" in
         : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
         # Standard FreeBSD target list
         TARGETS="AArch64;ARM;Mips;PowerPC;RISCV;Sparc;X86"
-        OPENCILK_INSTALL_PREFIX=/opt/opencilk-2
+        OPENCILK_INSTALL_PREFIX=/opt/opencilk-3
         ;;
     *)
         : "${COMPILER_RT_COMPONENTS:=";compiler-rt"}"
         TARGETS="AArch64;X86"
-        OPENCILK_INSTALL_PREFIX=/opt/opencilk-2
+        OPENCILK_INSTALL_PREFIX=/opt/opencilk-3
         ;;
 esac
 # TODO: Add support to optionally enable other popular features on
@@ -137,7 +138,7 @@ case "${OS}" in
 	LIBNAME=libopencilk.a
 	;;
 esac
-VERSION=$(sed -n '/set.LLVM_VERSION_MAJOR/s/^.* \([0-9.]*\))/\1/p' "${OPENCILK_SOURCE}/llvm/CMakeLists.txt")
+VERSION=$(${BUILD_DIR}/bin/llvm-config --version | sed 's/\([^.]*\).*/\1/')
 
 LIBPATH="${BUILD_DIR}/lib/clang/${VERSION}/lib/${TRIPLE}/${LIBNAME:?}"
 
