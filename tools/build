@@ -127,6 +127,22 @@ cmake -DLLVM_ENABLE_PROJECTS="${COMPONENTS}" \
 cmake --build . -- -j "${NCPU}"
 # TODO: cmake --install ...
 
+# Verify that the compiler works.
+cat <<CPP > ${tempfile:=$(mktemp -t XXXXXX.cpp)}
+#include <cstdio>
+int main() {
+    printf("Hello, world\n");
+    return 0;
+}
+CPP
+if ! ${BUILD_DIR}/bin/clang++ ${tempfile} -o temp ; then
+    echo -e "Failed to compile test program with OpenCilk compiler.\nThere might be a problem with your system configuration.\nOutput of '${BUILD_DIR}/bin/clang++ -v':"
+    ${BUILD_DIR}/bin/clang++ -v
+    rm -rf ${tempfile} temp
+    exit 1
+fi
+rm -rf ${tempfile} temp
+
 case "${OS}" in
     # Darwin is a special case.  The version is not embedded in the path.
     Darwin)
