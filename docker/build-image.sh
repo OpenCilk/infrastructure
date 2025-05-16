@@ -50,7 +50,7 @@ rm -f cilktools.tar.gz
 echo "Modifying scripts for use in Docker environment..."
 
 # The build script does not build the lld target, which is part of the binary release.
-sed -i 's/COMPONENTS=\"clang\"/COMPONENTS=\"clang;lld\"/g' opencilk/infrastructure/tools/build
+sed -i 's/COMPONENTS=\"clang/COMPONENTS=\"clang;lld/g' opencilk/infrastructure/tools/build
 
 # This turns off assertions in the compiler, shaving off > 600 MB in size from the binaries.
 sed -i 's/OPENCILK_ASSERTIONS=On/OPENCILK_ASSERTIONS=Off/g' opencilk/infrastructure/tools/build
@@ -60,7 +60,7 @@ sed -i 's/OPENCILK_ASSERTIONS=On/OPENCILK_ASSERTIONS=Off/g' opencilk/infrastruct
 sed -i 's/cmake -D/cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DLLVM_ENABLE_LLD=On -D/g' opencilk/infrastructure/tools/build
 
 # This sets the install prefix to /usr/local.
-sed -i 's/OPENCILK_INSTALL_PREFIX=\/opt\/opencilk-2/OPENCILK_INSTALL_PREFIX=\/usr\/local/g' opencilk/infrastructure/tools/build
+sed -i 's/OPENCILK_INSTALL_PREFIX=\/opt\/opencilk-3/OPENCILK_INSTALL_PREFIX=\/usr\/local/g' opencilk/infrastructure/tools/build
 
 # Tar the source. We want to copy in the tar ball to save space; if we copy it in
 # uncompressed, docker will hold onto the uncompressed data even if we compress it
